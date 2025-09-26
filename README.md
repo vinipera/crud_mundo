@@ -4,22 +4,6 @@ Bem-vindo ao **CRUD Mundo**, um sistema web completo desenvolvido em **PHP**, **
 
 ---
 
-## 📌 Índice
-
-- [📖 Sobre o Projeto](#-sobre-o-projeto)
-- [⚙️ Funcionalidades](#️-funcionalidades)
-- [🗄️ Estrutura do Banco de Dados](#️-estrutura-do-banco-de-dados)
-- [🔌 Integrações com APIs](#-integrações-com-apis)
-- [🛠️ Tecnologias Utilizadas](#️-tecnologias-utilizadas)
-- [🚀 Como Executar o Projeto](#-como-executar-o-projeto)
-- [📂 Estrutura de Pastas](#-estrutura-de-pastas)
-- [📊 Funcionalidades Extras (Desafio)](#-funcionalidades-extras-desafio)
-- [📸 Capturas de Tela](#-capturas-de-tela)
-- [📜 Licença](#-licença)
-- [👤 Autor](#-autor)
-
----
-
 ## 📖 Sobre o Projeto
 
 O **CRUD Mundo** foi desenvolvido como parte da disciplina de **Programação Web** do curso de **Desenvolvimento de Sistemas**, com o objetivo de criar uma aplicação web funcional que permita gerenciar dados sobre **países e cidades do mundo**.
