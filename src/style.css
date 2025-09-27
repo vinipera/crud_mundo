@@ -1,0 +1,460 @@
+/* Reset básico e fontes */
+body {
+    margin: 0;
+    font-family: 'Roboto Mono', monospace; /* ALTERADO */
+    background-color: #0a0a0a; /* Fundo preto */
+    color: #e0e0e0; /* Letras brancas/cinza claro */
+    line-height: 1.6;
+    overflow-x: hidden; /* Evita scroll horizontal */
+    position: relative; /* Para as estrelas de fundo */
+}
+
+/* Estrelas de fundo */
+.background-stars {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    z-index: -1;
+    pointer-events: none;
+}
+
+/* Animação de estrelas (exemplo simples, pode ser mais complexo com JS) */
+.background-stars::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at 10% 20%, rgba(255, 255, 255, 0.1) 1px, transparent 1%),
+                radial-gradient(circle at 90% 80%, rgba(255, 255, 255, 0.1) 1px, transparent 1%),
+                radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.1) 1px, transparent 1%);
+    background-size: 300px 300px;
+    animation: moveStars 100s linear infinite;
+}
+
+@keyframes moveStars {
+    from { background-position: 0 0; }
+    to { background-position: 100% 100%; }
+}
+
+/* Layout principal com flexbox */
+.main-container {
+    display: flex;
+    min-height: 100vh;
+    position: relative;
+    z-index: 1; /* Garante que o conteúdo fique acima das estrelas */
+    padding: 10px;
+}
+
+.content-section {
+    flex: 1; /* Ocupa o espaço restante */
+    width: 70%; /* 70% da largura */
+    padding: 40px;
+    box-sizing: border-box;
+    position: relative;
+    z-index: 2; /* Acima do globo */
+    margin-left: 5px; /* ADICIONADO - Margem à esquerda */
+}
+
+.globe-section {
+    width: 40%; /* 30% da largura */
+    position: sticky; /* Faz o globo ficar fixo na tela */
+    top: 0;
+    height: 100vh; /* Ocupa a altura total da viewport */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px; /* Espaço interno para evitar cortes na esfera */
+    box-sizing: border-box; /* Inclui padding no cálculo de largura/altura */
+    z-index: 1; /* Abaixo do conteúdo principal */
+    /* Fundo transparente para herdar o comum do body (sem gradiente) */
+    margin-right: 40px; /* ADICIONADO - Margem à direita */
+}
+
+.globe-section canvas {
+    display: block;
+    width: 150% !important;
+    height: 150% !important;
+    /* Garante que o canvas se adapte sem cortes, respeitando o padding do container */
+}
+
+/* Hero Section (Frase inicial) */
+.hero-section {
+    min-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    padding-bottom: 80px;
+    text-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+    max-width: 90%; /* ADICIONADO - Limita a largura */
+}
+
+.hero-title {
+    font-family: 'DROID', sans-serif; /* ADICIONADO */
+    font-size: 4.5em;
+    font-weight: normal; /* ALTERADO */
+    margin-bottom: 20px;
+    line-height: 1.1;
+    color: #ffffff;
+    letter-spacing: 1px; /* ADICIONADO */
+}
+
+.hero-subtitle {
+    font-size: 1.4em;
+    font-weight: 300;
+    color: #b0e0e6;
+    max-width: 600px;
+    font-family: 'Roboto Mono', monospace; /* ADICIONADO */
+    line-height: 1.5; /* ADICIONADO - Melhor espaçamento entre linhas */
+}
+
+
+.gradient-text {
+    background: linear-gradient(45deg, #00ffff, #8a2be2); /* Gradiente ciano para roxo */
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* Seção CRUD */
+.crud-section {
+    padding: 60px 0;
+}
+
+h2 {
+    font-family: 'DROID', sans-serif; /* ADICIONADO */
+    font-size: 2.5em;
+    font-weight: normal; /* ALTERADO */
+    color: #00ffff;
+    margin-top: 60px;
+    margin-bottom: 30px;
+    border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+    padding-bottom: 15px;
+    text-shadow: 0 0 5px rgba(0, 255, 255, 0.2);
+    letter-spacing: 1px; /* ADICIONADO */
+    margin-right: 20px; /* ADICIONADO */
+}
+
+/* Formulários */
+.form-card {
+    background-color: rgba(15, 25, 40, 0.7);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(0, 255, 255, 0.3);
+    border-radius: 10px;
+    padding: 30px;
+    margin-bottom: 40px;
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.1);
+    margin-right: 20px; /* ADICIONADO - Margem à direita */
+}
+
+label {
+    display: block;
+    margin-top: 20px;
+    margin-bottom: 10px;
+    color: #b0e0e6;
+    font-weight: 300;
+    font-size: 1.1em;
+    font-family: 'Roboto Mono', monospace; /* ADICIONADO */
+}
+
+input[type="text"],
+input[type="number"],
+select {
+    width: calc(100% - 20px);
+    padding: 14px;
+    margin-bottom: 20px;
+    border: 1px solid rgba(0, 255, 255, 0.4);
+    background-color: rgba(30, 45, 60, 0.8);
+    color: #ffffff;
+    border-radius: 5px;
+    font-size: 1em;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    font-family: 'Roboto Mono', monospace; /* ADICIONADO */
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus,
+select:focus {
+    border-color: linear-gradient(45deg, #00ffff, #8a2be2); 
+    box-shadow: 0 0 8px linear-gradient(45deg, #00ffff, #8a2be2); 
+    outline: none;
+}
+
+/* Botões */
+.btn-primary {
+    font-family: 'Roboto Mono', monospace; /* ADICIONADO */
+    background: linear-gradient(45deg, #00ffff, #8a2be2); 
+    color: #ffffff;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1.1em;
+    font-weight: 500;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 5px 15px rgba(0, 255, 255, 0.3);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px linear-gradient(45deg, #00ffff, #8a2be2); 
+}
+
+.btn-cancel {
+    background-color: rgba(100, 100, 100, 0.7);
+    color: #ffffff;
+    padding: 14px 30px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1.1em;
+    font-weight: 500;
+    margin-left: 10px;
+    transition: background-color 0.3s ease;
+}
+
+.btn-cancel:hover {
+    background-color: rgba(120, 120, 120, 0.9);
+}
+
+/* Tabelas */
+.table-container {
+    background-color: rgba(15, 25, 40, 0.7);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(0, 255, 255, 0.3);
+    border-radius: 10px;
+    overflow-x: auto;
+    margin-bottom: 40px;
+    padding: 20px;
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.1);
+    margin-right: 20px; /* ADICIONADO - Margem à direita */
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    color: #e0e0e0;
+}
+
+th, td {
+    padding: 8px;
+    text-align: left;
+    border-bottom: 1px solid rgba(0, 255, 255, 0.15);
+    font-size: 0.9em;
+    font-family: 'Roboto Mono', monospace; /* ADICIONADO */
+}
+
+th {
+    background-color: rgba(0, 255, 255, 0.1);
+    color: #00ffff;
+    font-weight: 500; /* ALTERADO */
+    text-transform: uppercase;
+    font-size: 0.9em;
+}
+
+tr:hover {
+    background-color: rgba(0, 255, 255, 0.05);
+}
+
+.edit-link, .delete-link {
+    color: #00ffff;
+    text-decoration: none;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.edit-link:hover {
+    color: #00aaff;
+}
+
+.delete-link {
+    color: #ff6347; /* Tom de vermelho para exclusão */
+}
+
+.delete-link:hover {
+    color: #ff4500;
+}
+
+/* Footer */
+.futuristic-footer {
+    font-family: 'Roboto Mono', monospace; /* ADICIONADO */
+    text-align: center;
+    padding: 40px 0;
+    margin-top: 60px;
+    border-top: 1px solid rgba(0, 255, 255, 0.2);
+    color: #b0e0e6;
+    font-weight: 300;
+    font-size: 0.9em;
+}
+
+/* Estilos para Modal (mantidos e adaptados) */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.7); /* Fundo mais escuro para o modal */
+    backdrop-filter: blur(5px);
+}
+.modal-content {
+    background-color: rgba(15, 25, 40, 0.9);
+    margin: 10% auto; /* Centraliza mais */
+    padding: 30px;
+    border: 1px solid rgba(0, 255, 255, 0.5);
+    width: 90%;
+    max-width: 600px;
+    border-radius: 15px;
+    box-shadow: 0 0 30px rgba(0, 255, 255, 0.4);
+    position: relative;
+}
+/* Estilos para Modal */
+.modal-content h3 {
+    font-family: 'DROID', sans-serif; /* ADICIONADO */
+    color: #00ffff;
+    font-size: 2em;
+    margin-bottom: 25px;
+    text-shadow: 0 0 5px rgba(0, 255, 255, 0.3);
+    font-weight: normal; /* ADICIONADO */
+    letter-spacing: 1px; /* ADICIONADO */
+}
+.close {
+    color: #00ffff;
+    float: right;
+    font-size: 36px;
+    font-weight: bold;
+    cursor: pointer;
+    position: absolute;
+    top: 15px;
+    right: 25px;
+    transition: color 0.3s ease;
+}
+.close:hover,
+.close:focus {
+    color: #00aaff;
+    text-decoration: none;
+}
+.modal form {
+    margin: 0;
+}
+.modal label {
+    margin-top: 15px;
+    color: #b0e0e6;
+    font-family: 'Roboto Mono', monospace; /* ADICIONADO */
+}
+.modal input, .modal select {
+    width: calc(100% - 20px);
+    margin-bottom: 20px;
+    background-color: rgba(30, 45, 60, 0.8);
+    border: 1px solid rgba(0, 255, 255, 0.4);
+    color: #ffffff;
+    font-family: 'Roboto Mono', monospace; /* ADICIONADO */
+}
+.modal button {
+    width: auto;
+    margin-right: 15px;
+    padding: 12px 25px;
+    font-family: 'Roboto Mono', monospace; /* ADICIONADO */
+}
+
+/* Responsividade */
+@media (max-width: 1024px) {
+    .hero-title {
+        font-size: 3.5em;
+    }
+    .hero-subtitle {
+        font-size: 1.2em;
+    }
+    h2 {
+        font-size: 2em;
+    }
+    .content-section {
+        padding: 30px;
+    }
+}
+
+@media (max-width: 768px) {
+    .main-container {
+        flex-direction: column; /* Coloca o globo abaixo do conteúdo */
+    }
+    .content-section, .globe-section {
+        margin-left: 20px;
+        width: 100%; /* Ocupa a largura total */
+        position: static; /* Remove o sticky do globo */
+        height: auto; /* Altura automática para o globo */
+    }
+    .globe-section {
+        margin-right: 0;
+        min-height: 400px; /* Altura mínima para o globo em mobile */
+        order: -1; /* Coloca o globo no topo em telas pequenas */
+        /* Fundo transparente para herdar o comum do body (sem gradiente) */
+        padding: 10px; /* Padding menor em mobile para evitar cortes */
+    }
+    .hero-section {
+        min-height: 50vh;
+        padding-bottom: 40px;
+        align-items: center;
+        text-align: center;
+        max-width: 100%;    
+    }
+    .hero-title {
+        font-size: 2.8em;
+        letter-spacing: 0.5px; /* ADICIONADO */
+    }
+    .hero-subtitle {
+        font-size: 1em;
+    }
+    h2 {
+        font-size: 1.8em;
+        text-align: center;
+        letter-spacing: 0.5px; /* ADICIONADO */
+        margin-right: 0;
+    }
+    .form-card, .table-container {
+        padding: 20px; /* Padding reduzido em mobile para compactar */
+    }
+    th, td {
+        padding: 6px; /* Mais compacto em mobile */
+        font-size: 0.85em; /* Fonte ainda menor em mobile */
+    }
+    .modal-content {
+        margin: 5% auto;
+        width: 95%;
+    }
+}
+
+@media (max-width: 480px) {
+    .body{
+         font-size: 0.9em;
+    }
+    .hero-title {
+        font-size: 2em;
+        letter-spacing: 0.3px; /* ADICIONADO */
+    }
+    .hero-subtitle {
+        font-size: 0.9em;
+    }
+    h2 {
+        font-size: 1.5em;
+        letter-spacing: 0.3px; /* ADICIONADO */
+    }
+    input, select, button {
+        font-size: 0.9em;
+        padding: 10px;
+    }
+    .btn-primary, .btn-cancel {
+        width: 100%;
+        margin-left: 0;
+        margin-top: 10px;
+    }
+    .modal-content h3 {
+        font-size: 1.5em;
+    }
+}
