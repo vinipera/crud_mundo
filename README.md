@@ -33,13 +33,13 @@ A aplicação conta com um **CRUD completo** (Create, Read, Update, Delete), int
 
 ---
 
-## 🗄️ Estrutura do Banco de Dados
+## Estrutura do Banco de Dados
 
 Banco de dados: `bd_mundo`  
 
 **Tabelas principais:**
 
-### 🗺️ paises
+### paises
 | Campo        | Tipo         | Descrição                      |
 |--------------|--------------|------------------------------|
 | id_pais      | INT (PK)     | Identificador do país        |
@@ -48,7 +48,7 @@ Banco de dados: `bd_mundo`
 | populacao    | INT          | População total             |
 | idioma       | VARCHAR(50)  | Idioma principal            |
 
-### 🏙️ cidades
+### cidades
 | Campo        | Tipo         | Descrição                      |
 |--------------|--------------|------------------------------|
 | id_cidade    | INT (PK)     | Identificador da cidade      |
@@ -60,19 +60,19 @@ Banco de dados: `bd_mundo`
 
 ---
 
-## 🔌 Integrações com APIs
+## Integrações com APIs
 
 O sistema utiliza **APIs REST** para enriquecer os dados:
 
-🌐 **REST Countries**  
+**REST Countries**  
 - Informações adicionais sobre países (bandeira, moeda, capital etc.)
 
-☁️ **OpenWeatherMap**  
+**OpenWeatherMap**  
 - Exibição do clima em tempo real das cidades cadastradas.
 
 ---
 
-## 🛠️ Tecnologias Utilizadas
+## Tecnologias Utilizadas
 
 - **HTML5** – Estrutura das páginas  
 - **CSS3** – Estilização e responsividade  
@@ -84,14 +84,6 @@ O sistema utiliza **APIs REST** para enriquecer os dados:
 
 ---
 
-## 🚀 Como Executar o Projeto
-
-### 🧱 Pré-requisitos
-
-- [XAMPP](https://www.apachefriends.org/) ou outro servidor PHP/MySQL  
-- PHP 8.0+  
-- MySQL 5.7+  
-- Navegador atualizado
 
 ### 🔧 Passos para rodar localmente
 
