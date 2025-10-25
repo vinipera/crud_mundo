@@ -1,0 +1,100 @@
+<?php
+function converterContinenteInglesParaPortugues($continenteIngles) {
+    $conversao = [
+        'Africa' => 'África',
+        'Americas' => 'América',
+        'Asia' => 'Ásia',
+        'Europe' => 'Europa',
+        'Oceania' => 'Oceania',
+        'Antarctic' => 'Antártica',
+        'North America' => 'América do Norte',
+        'South America' => 'América do Sul',
+        'Central America' => 'América Central',
+        'Caribbean' => 'Caribe'
+    ];
+    
+    return $conversao[$continenteIngles] ?? 'Desconhecido';
+}
+
+function importarPaisesAPI($paisModel) {
+    $apiUrl = 'https://restcountries.com/v3.1/all?fields=name,region,population,languages,capital,currencies,flags,cca2';
+
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $apiUrl);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 15);
+    $resp = curl_exec($ch);
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+
+    if ($resp && $httpCode >= 200 && $httpCode < 300) {
+        $countries = json_decode($resp, true);
+        if (is_array($countries)) {
+            $importedCount = 0;
+            
+            foreach ($countries as $c) {
+                $nome = $c['name']['common'] ?? null;
+                $continente = $c['region'] ?? 'Desconhecido';
+                $continente = converterContinenteInglesParaPortugues($continente);
+                $populacao = isset($c['population']) ? intval($c['population']) : 0;
+                
+                // Novos campos
+                $capital = isset($c['capital'][0]) ? $c['capital'][0] : 'Desconhecida';
+                $moeda = 'Desconhecida';
+                if (!empty($c['currencies']) && is_array($c['currencies'])) {
+                    $moedas = [];
+                    foreach ($c['currencies'] as $currency) {
+                        $moedas[] = $currency['name'] ?? '';
+                    }
+                    $moeda = implode(', ', array_filter($moedas));
+                }
+                $bandeira = $c['flags']['png'] ?? $c['flags']['svg'] ?? null;
+                $sigla = $c['cca2'] ?? '';
+                
+                $idiomas = 'Desconhecido';
+                if (!empty($c['languages']) && is_array($c['languages'])) {
+                    $idiomas = implode(', ', array_values($c['languages']));
+                }
+
+                if (!$nome) continue;
+                
+                // Sanitizar dados
+                $nome = mb_substr(trim($nome), 0, 120);
+                $continente = mb_substr(trim($continente), 0, 120);
+                $idiomas = mb_substr(trim($idiomas), 0, 120);
+                $capital = mb_substr(trim($capital), 0, 100);
+                $moeda = mb_substr(trim($moeda), 0, 50);
+                $sigla = mb_substr(trim($sigla), 0, 5);
+
+                // Verificar se o país já existe antes de inserir
+                $paisExistente = $paisModel->buscarPorNome($nome);
+                
+                if (!$paisExistente) {
+                    $dadosPais = [
+                        'nome_pais' => $nome,
+                        'continente' => $continente,
+                        'populacao_pais' => $populacao,
+                        'capital' => $capital,
+                        'moeda' => $moeda,
+                        'bandeira' => $bandeira,
+                        'sigla' => $sigla,
+                        'idioma' => $idiomas
+                    ];
+                    
+                    if ($paisModel->inserir($dadosPais)) {
+                        $importedCount++;
+                    }
+                }
+            }
+            
+            return [
+                'success' => true, 
+                'message' => "✅ Importação concluída! $importedCount países foram importados com sucesso.",
+                'count' => $importedCount
+            ];
+        }
+    }
+    
+    return ['success' => false, 'message' => '❌ Erro ao conectar com a API de países. Tente novamente.'];
+}
+?>
