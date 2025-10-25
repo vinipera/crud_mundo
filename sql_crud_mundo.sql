@@ -10,6 +10,12 @@ create table paises (
     primary key(id_pais)
 );
 
+ALTER TABLE paises 
+ADD COLUMN capital VARCHAR(100),
+ADD COLUMN moeda VARCHAR(50),
+ADD COLUMN bandeira VARCHAR(255),
+ADD COLUMN sigla VARCHAR(5);
+
 create table cidades (
 	id_cidade int not null auto_increment,
     nome_cidade varchar(120) not null,
@@ -19,3 +25,9 @@ create table cidades (
     foreign key (id_pais) references paises(id_pais)
 );
 
+ALTER TABLE cidades 
+ADD COLUMN latitude DECIMAL(10, 8),
+ADD COLUMN longitude DECIMAL(11, 8);
+
+select * from paises;
+select * from cidades;
