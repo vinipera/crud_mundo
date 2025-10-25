@@ -1,15 +1,15 @@
 <?php
 require 'config.php';
 
-// Funções para operações CRUD (mantidas iguais)
-function inserirPais($pdo, $nome, $continente, $populacao) {
-    $stmt = $pdo->prepare("INSERT INTO paises (nome_pais, continente, populacao_pais) VALUES (?, ?, ?)");
-    return $stmt->execute([$nome, $continente, $populacao]);
+// Funções para operações CRUD (atualizadas com novos campos)
+function inserirPais($pdo, $nome, $continente, $populacao, $capital = null, $moeda = null, $bandeira = null, $sigla = null, $idioma = null) {
+    $stmt = $pdo->prepare("INSERT INTO paises (nome_pais, continente, populacao_pais, capital, moeda, bandeira, sigla, idioma) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+    return $stmt->execute([$nome, $continente, $populacao, $capital, $moeda, $bandeira, $sigla, $idioma]);
 }
 
-function atualizarPais($pdo, $id, $nome, $continente, $populacao) {
-    $stmt = $pdo->prepare("UPDATE paises SET nome_pais = ?, continente = ?, populacao_pais = ? WHERE id_pais = ?");
-    return $stmt->execute([$nome, $continente, $populacao, $id]);
+function atualizarPais($pdo, $id, $nome, $continente, $populacao, $capital = null, $moeda = null, $bandeira = null, $sigla = null, $idioma = null) {
+    $stmt = $pdo->prepare("UPDATE paises SET nome_pais = ?, continente = ?, populacao_pais = ?, capital = ?, moeda = ?, bandeira = ?, sigla = ?, idioma = ? WHERE id_pais = ?");
+    return $stmt->execute([$nome, $continente, $populacao, $capital, $moeda, $bandeira, $sigla, $idioma, $id]);
 }
 
 function excluirPais($pdo, $id) {
@@ -60,8 +60,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $nome = trim($_POST['nome_pais'] ?? '');
             $continente = $_POST['continente'] ?? '';
             $populacao = filter_input(INPUT_POST, 'populacao_pais', FILTER_VALIDATE_INT);
+            $capital = trim($_POST['capital'] ?? '');
+            $moeda = trim($_POST['moeda'] ?? '');
+            $sigla = trim($_POST['sigla'] ?? '');
+            $idioma = trim($_POST['idioma'] ?? '');
+            
             if ($nome && $continente && $populacao !== false) {
-                inserirPais($pdo, $nome, $continente, $populacao);
+                inserirPais($pdo, $nome, $continente, $populacao, $capital, $moeda, null, $sigla, $idioma);
             }
             break;
 
@@ -70,8 +75,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $nome = trim($_POST['nome_pais'] ?? '');
             $continente = $_POST['continente'] ?? '';
             $populacao = filter_input(INPUT_POST, 'populacao_pais', FILTER_VALIDATE_INT);
+            $capital = trim($_POST['capital'] ?? '');
+            $moeda = trim($_POST['moeda'] ?? '');
+            $sigla = trim($_POST['sigla'] ?? '');
+            $idioma = trim($_POST['idioma'] ?? '');
+            
             if ($id && $nome && $continente && $populacao !== false) {
-                atualizarPais($pdo, $id, $nome, $continente, $populacao);
+                atualizarPais($pdo, $id, $nome, $continente, $populacao, $capital, $moeda, null, $sigla, $idioma);
             }
             break;
 
@@ -93,10 +103,148 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 atualizarCidade($pdo, $id, $nome, $populacao, $id_pais);
             }
             break;
+
+        case 'import_paises_api':
+            // Integração com API pública de países (usaremos restcountries.com)
+            $apiUrl = 'https://restcountries.com/v3.1/all?fields=name,region,population,languages,capital,currencies,flags,cca2';
+
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $apiUrl);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 15);
+            // curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); // descomente apenas em ambiente específico
+            $resp = curl_exec($ch);
+            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            curl_close($ch);
+
+            if ($resp && $httpCode >= 200 && $httpCode < 300) {
+                $countries = json_decode($resp, true);
+                if (is_array($countries)) {
+                    $selectStmt = $pdo->prepare("SELECT id_pais FROM paises WHERE nome_pais = ? LIMIT 1");
+                    $updateStmt = $pdo->prepare("UPDATE paises SET continente = ?, populacao_pais = ?, idioma = ?, capital = ?, moeda = ?, bandeira = ?, sigla = ? WHERE id_pais = ?");
+                    $insertStmt = $pdo->prepare("INSERT INTO paises (nome_pais, continente, populacao_pais, idioma, capital, moeda, bandeira, sigla) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+
+                    foreach ($countries as $c) {
+                        $nome = $c['name']['common'] ?? null;
+                        $continente = $c['region'] ?? 'Desconhecido';
+                        $populacao = isset($c['population']) ? intval($c['population']) : 0;
+                        
+                        // Novos campos
+                        $capital = isset($c['capital'][0]) ? $c['capital'][0] : 'Desconhecida';
+                        $moeda = 'Desconhecida';
+                        if (!empty($c['currencies']) && is_array($c['currencies'])) {
+                            $moedas = [];
+                            foreach ($c['currencies'] as $currency) {
+                                $moedas[] = $currency['name'] ?? '';
+                            }
+                            $moeda = implode(', ', array_filter($moedas));
+                        }
+                        $bandeira = $c['flags']['png'] ?? $c['flags']['svg'] ?? null;
+                        $sigla = $c['cca2'] ?? '';
+                        
+                        $idiomas = 'Desconhecido';
+                        if (!empty($c['languages']) && is_array($c['languages'])) {
+                            $idiomas = implode(', ', array_values($c['languages']));
+                        }
+
+                        if (!$nome) continue;
+                        $nome = mb_substr(trim($nome), 0, 120);
+                        $continente = mb_substr(trim($continente), 0, 120);
+                        $idiomas = mb_substr(trim($idiomas), 0, 120);
+                        $capital = mb_substr(trim($capital), 0, 100);
+                        $moeda = mb_substr(trim($moeda), 0, 50);
+                        $sigla = mb_substr(trim($sigla), 0, 5);
+
+                        $selectStmt->execute([$nome]);
+                        $row = $selectStmt->fetch(PDO::FETCH_ASSOC);
+                        if ($row && isset($row['id_pais'])) {
+                            $updateStmt->execute([$continente, $populacao, $idiomas, $capital, $moeda, $bandeira, $sigla, $row['id_pais']]);
+                        } else {
+                            $insertStmt->execute([$nome, $continente, $populacao, $idiomas, $capital, $moeda, $bandeira, $sigla]);
+                        }
+                    }
+                }
+            }
+            break;
     }
 
     // Redirecionamento para evitar reenvio do formulário (POST/Redirect/GET)
     header("Location: index.php");
+    exit;
+}
+
+// Sua API Key - SUBSTITUA pela sua chave
+define('OPENWEATHER_API_KEY', '06cb432fb3eed4d1136c5929460bd323');
+
+// Função para obter clima diretamente pelo nome da cidade
+function obterClimaPorCidade($cidadeNome, $paisNome, $apiKey) {
+    // Primeiro tenta buscar pelo nome da cidade + país
+    $url = "https://api.openweathermap.org/data/2.5/weather?q=" . urlencode($cidadeNome) . "," . urlencode($paisNome) . "&appid=" . $apiKey . "&units=metric&lang=pt_br";
+    
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+    $resp = curl_exec($ch);
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+    
+    if ($resp && $httpCode === 200) {
+        return json_decode($resp, true);
+    }
+    
+    // Se não encontrou, tenta apenas pelo nome da cidade
+    $url = "https://api.openweathermap.org/data/2.5/weather?q=" . urlencode($cidadeNome) . "&appid=" . $apiKey . "&units=metric&lang=pt_br";
+    
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+    $resp = curl_exec($ch);
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+    
+    if ($resp && $httpCode === 200) {
+        return json_decode($resp, true);
+    }
+    
+    return null;
+}
+
+// Manipulação de requisições de clima
+if (isset($_GET['get_clima'])) {
+    $idCidade = filter_input(INPUT_GET, 'get_clima', FILTER_VALIDATE_INT);
+    
+    if ($idCidade) {
+        // Buscar cidade no banco
+        $stmt = $pdo->prepare("SELECT c.*, p.nome_pais FROM cidades c JOIN paises p ON c.id_pais = p.id_pais WHERE c.id_cidade = ?");
+        $stmt->execute([$idCidade]);
+        $cidade = $stmt->fetch(PDO::FETCH_ASSOC);
+        
+        if ($cidade) {
+            // Buscar clima diretamente pelo nome da cidade
+            $clima = obterClimaPorCidade($cidade['nome_cidade'], $cidade['nome_pais'], OPENWEATHER_API_KEY);
+            
+            if ($clima) {
+                header('Content-Type: application/json');
+                echo json_encode([
+                    'success' => true,
+                    'cidade' => $cidade['nome_cidade'],
+                    'clima' => [
+                        'temperatura' => round($clima['main']['temp']),
+                        'descricao' => ucfirst($clima['weather'][0]['description']),
+                        'umidade' => $clima['main']['humidity'],
+                        'vento' => round($clima['wind']['speed'] * 3.6), // converter para km/h
+                        'icone' => $clima['weather'][0]['icon']
+                    ]
+                ]);
+                exit;
+            }
+        }
+    }
+    
+    header('Content-Type: application/json');
+    echo json_encode(['success' => false, 'message' => 'Não foi possível obter dados do clima']);
     exit;
 }
 ?>
@@ -117,14 +265,128 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         font-weight: normal;
         font-style: normal;
     }
+    
+    /* Bandeiras */
+    .flag-img {
+        width: 50px;
+        height: 35px;
+        border-radius: 3px;
+        border: 1px solid rgba(222, 133, 0, 0.3);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        transition: transform 0.2s ease;
+    }
+    
+    .flag-img:hover {
+        transform: scale(1.1);
+    }
+    
+    .country-info {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .country-details {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+        margin-top: 10px;
+        padding: 15px;
+        background: rgba(222, 133, 0, 0.05);
+        border-radius: 8px;
+        border-left: 3px solid #de8500;
+    }
+    
+    .detail-item {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .detail-label {
+        font-size: 0.8em;
+        color: #de8500;
+        font-weight: 500;
+        margin-bottom: 2px;
+    }
+    
+    .detail-value {
+        font-size: 0.9em;
+        color: #e0e0e0;
+    }
+
+    /* Estilos para clima */
+    .btn-clima {
+        background: linear-gradient(45deg, #de8500, #cd6700);
+        color: white;
+        border: none;
+        padding: 8px 12px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 0.8em;
+        font-family: 'Roboto Mono', monospace;
+        transition: all 0.3s ease;
+    }
+
+    .btn-clima:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(222, 133, 0, 0.3);
+    }
+
+    .btn-clima:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+    .clima-info {
+        margin-top: 8px;
+        padding: 10px;
+        background: rgba(222, 133, 0, 0.1);
+        border-radius: 5px;
+        border-left: 3px solid #de8500;
+        font-size: 0.85em;
+    }
+
+    .weather-icon {
+        width: 40px;
+        height: 40px;
+        vertical-align: middle;
+    }
+
+    .weather-details {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 8px;
+        margin-top: 5px;
+    }
+
+    .weather-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .weather-label {
+        font-size: 0.7em;
+        color: #de8500;
+        margin-bottom: 2px;
+    }
+
+    .weather-value {
+        font-size: 0.9em;
+        font-weight: 500;
+    }
     </style>
 
-    <!-- Incluir Three.js via CDN -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.158.0/three.min.js"></script>
 </head>
 <body>
 
     <div class="background-stars"></div>
+
+    <!-- Vídeo de fundo fixo (50% opacidade) -->
+    <video id="bgVideo" autoplay muted loop playsinline aria-hidden="true">
+        <source src="assets/fundo_mundo.mp4" type="video/mp4">
+        Seu navegador não suporta vídeo HTML5.
+    </video>
 
     <div class="main-container">
         <div class="content-section">
@@ -134,6 +396,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </header>
 
             <section class="crud-section">
+                <!-- Botão para importar países de uma API RESTful pública -->
+                <form method="POST" style="display:inline-block;margin-bottom:20px;">
+                    <input type="hidden" name="action" value="import_paises_api">
+                    <button type="submit" class="btn-primary">Importar países da API</button>
+                </form>
+
                 <h2>Adicionar Novo País</h2>
                 <form method="POST" class="form-card">
                     <input type="hidden" name="action" value="insert_pais">
@@ -153,6 +421,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     
                     <label for="populacao_pais">População:</label>
                     <input type="number" id="populacao_pais" name="populacao_pais" required>
+                    
+                    <label for="capital">Capital:</label>
+                    <input type="text" id="capital" name="capital">
+                    
+                    <label for="moeda">Moeda:</label>
+                    <input type="text" id="moeda" name="moeda">
+                    
+                    <label for="sigla">Sigla:</label>
+                    <input type="text" id="sigla" name="sigla" maxlength="5">
+                    
+                    <label for="idioma">Idioma:</label>
+                    <input type="text" id="idioma" name="idioma">
                     
                     <button type="submit" class="btn-primary">Adicionar País</button>
                 </form>
@@ -186,9 +466,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <table>
                         <thead>
                             <tr>
+                                <th>Bandeira</th>
                                 <th>Nome</th>
                                 <th>Continente</th>
                                 <th>População</th>
+                                <th>Detalhes</th>
                                 <th>Ações</th>
                             </tr>
                         </thead>
@@ -196,13 +478,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <?php
                             $query = $pdo->query("SELECT * FROM paises ORDER BY nome_pais");
                             while ($row = $query->fetch(PDO::FETCH_ASSOC)) {
-                                $continenteEsc = htmlspecialchars($row['continente'], ENT_QUOTES, 'UTF-8'); // Para JS
+                                $continenteEsc = htmlspecialchars($row['continente'], ENT_QUOTES, 'UTF-8');
+                                $hasDetails = !empty($row['capital']) || !empty($row['moeda']) || !empty($row['sigla']) || !empty($row['idioma']);
+                                
                                 echo '<tr>';
+                                echo '<td>';
+                                if (!empty($row['bandeira'])) {
+                                    echo '<img src="' . htmlspecialchars($row['bandeira']) . '" alt="Bandeira do ' . htmlspecialchars($row['nome_pais']) . '" class="flag-img">';
+                                } else {
+                                    echo '—';
+                                }
+                                echo '</td>';
                                 echo '<td>' . htmlspecialchars($row['nome_pais']) . '</td>';
                                 echo '<td>' . htmlspecialchars($row['continente']) . '</td>';
                                 echo '<td>' . number_format($row['populacao_pais']) . '</td>';
+                                echo '<td>';
+                                if ($hasDetails) {
+                                    echo '<div class="country-details">';
+                                    if (!empty($row['capital'])) {
+                                        echo '<div class="detail-item"><span class="detail-label">Capital:</span><span class="detail-value">' . htmlspecialchars($row['capital']) . '</span></div>';
+                                    }
+                                    if (!empty($row['moeda'])) {
+                                        echo '<div class="detail-item"><span class="detail-label">Moeda:</span><span class="detail-value">' . htmlspecialchars($row['moeda']) . '</span></div>';
+                                    }
+                                    if (!empty($row['sigla'])) {
+                                        echo '<div class="detail-item"><span class="detail-label">Sigla:</span><span class="detail-value">' . htmlspecialchars($row['sigla']) . '</span></div>';
+                                    }
+                                    if (!empty($row['idioma'])) {
+                                        echo '<div class="detail-item"><span class="detail-label">Idioma:</span><span class="detail-value">' . htmlspecialchars($row['idioma']) . '</span></div>';
+                                    }
+                                    echo '</div>';
+                                } else {
+                                    echo '—';
+                                }
+                                echo '</td>';
                                 echo '<td>
-                                        <span class="edit-link" onclick="openEditPaisModal(' . $row['id_pais'] . ', \'' . htmlspecialchars($row['nome_pais'], ENT_QUOTES, 'UTF-8') . '\', \'' . $continenteEsc . '\', ' . $row['populacao_pais'] . ')">Editar</span> |
+                                        <span class="edit-link" onclick="openEditPaisModal(' . $row['id_pais'] . ', \'' . htmlspecialchars($row['nome_pais'], ENT_QUOTES, 'UTF-8') . '\', \'' . $continenteEsc . '\', ' . $row['populacao_pais'] . ', \'' . htmlspecialchars($row['capital'] ?? '', ENT_QUOTES, 'UTF-8') . '\', \'' . htmlspecialchars($row['moeda'] ?? '', ENT_QUOTES, 'UTF-8') . '\', \'' . htmlspecialchars($row['sigla'] ?? '', ENT_QUOTES, 'UTF-8') . '\', \'' . htmlspecialchars($row['idioma'] ?? '', ENT_QUOTES, 'UTF-8') . '\')">Editar</span> | 
                                         <a href="?delete_pais=' . $row['id_pais'] . '" class="delete-link" onclick="return confirm(\'Confirmar exclusão?\')">Excluir</a>
                                     </td>';
                                 echo '</tr>';
@@ -220,6 +531,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <th>Nome</th>
                                 <th>População</th>
                                 <th>País</th>
+                                <th>Clima</th>
                                 <th>Ações</th>
                             </tr>
                         </thead>
@@ -232,6 +544,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 echo '<td>' . htmlspecialchars($row['nome_cidade']) . '</td>';
                                 echo '<td>' . number_format($row['populacao_cidade']) . '</td>';
                                 echo '<td>' . htmlspecialchars($row['nome_pais']) . '</td>';
+                                echo '<td>
+                                        <button class="btn-clima" onclick="obterClima(' . $row['id_cidade'] . ', this)" data-loading-text="Carregando...">
+                                            🌤️ Ver Clima
+                                        </button>
+                                        <div id="clima-' . $row['id_cidade'] . '" class="clima-info"></div>
+                                    </td>';
                                 echo '<td>
                                         <span class="edit-link" onclick="openEditCidadeModal(' . $row['id_cidade'] . ', \'' . htmlspecialchars($row['nome_cidade'], ENT_QUOTES, 'UTF-8') . '\', ' . $row['populacao_cidade'] . ', ' . $row['pais_id'] . ')">Editar</span> |
                                         <a href="?delete_cidade=' . $row['id_cidade'] . '" class="delete-link" onclick="return confirm(\'Confirmar exclusão?\')">Excluir</a>
@@ -249,9 +567,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </footer>
         </div>
 
-        <div class="globe-section">
-            <canvas id="globeCanvas"></canvas>
-        </div>
+        <!-- Substituído: globo 3D removido por um visual leve e centrado -->
+        <div class="space-visual" aria-hidden="true"></div>
     </div>
 
     <!-- Modal para Editar País -->
@@ -278,6 +595,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 
                 <label for="edit_populacao_pais">População:</label>
                 <input type="number" id="edit_populacao_pais" name="populacao_pais" required>
+                
+                <label for="edit_capital">Capital:</label>
+                <input type="text" id="edit_capital" name="capital">
+                
+                <label for="edit_moeda">Moeda:</label>
+                <input type="text" id="edit_moeda" name="moeda">
+                
+                <label for="edit_sigla">Sigla:</label>
+                <input type="text" id="edit_sigla" name="sigla" maxlength="5">
+                
+                <label for="edit_idioma">Idioma:</label>
+                <input type="text" id="edit_idioma" name="idioma">
                 
                 <button type="submit" class="btn-primary">Atualizar País</button>
                 <button type="button" class="btn-cancel" onclick="closeModal('modalPais')">Cancelar</button>
@@ -318,138 +647,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 
 <script>
-    // --- Three.js Globe Setup ---
-    let scene, camera, renderer, earth, clouds, stars;
-    let globeContainer = document.querySelector('.globe-section');
-    let globeCanvas = document.getElementById('globeCanvas');
-    let animationFrameId;
-
-    function initGlobe() {
-        if (!globeContainer || !globeCanvas) {
-            console.warn("Globe container or canvas not found. Globe will not be initialized.");
-            return;
-        }
-
-        // Scene
-        scene = new THREE.Scene();
-
-        // Camera
-        camera = new THREE.PerspectiveCamera(75, globeContainer.clientWidth / globeContainer.clientHeight, 0.1, 1000);
-        camera.position.z = 3;
-
-        // Renderer
-        renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, canvas: globeCanvas });
-        renderer.setSize(globeContainer.clientWidth, globeContainer.clientHeight);
-        renderer.setClearColor(0x000000, 0);
-
-        // Texture Loader
-        const textureLoader = new THREE.TextureLoader();
-
-        // Earth Globe com sua textura
-        const earthGeometry = new THREE.SphereGeometry(1, 64, 64);
-        const earthMaterial = new THREE.MeshPhongMaterial({
-            map: textureLoader.load('textures/textura.jpg'),
-            color: 0x5ca0ff, // Azul bem vibrante
-            specular: 0xaaaaaa, // Muito especular
-            shininess: 100, // Muito brilhante
-            emissive: 0x2a4a7a, // Emissão mais forte
-            emissiveIntensity: 0.2
-        });
-        earth = new THREE.Mesh(earthGeometry, earthMaterial);
-        scene.add(earth);
-
-        // Camada de nuvens (esfera ligeiramente maior que a Terra)
-        const cloudsGeometry = new THREE.SphereGeometry(1.02, 64, 64);
-        const cloudsMaterial = new THREE.MeshPhongMaterial({
-            map: textureLoader.load('textures/nuvens.jpg'),
-            transparent: true,
-            opacity: 0.3, // Mais transparente
-            side: THREE.DoubleSide
-        });
-        clouds = new THREE.Mesh(cloudsGeometry, cloudsMaterial);
-        scene.add(clouds);
-
-        // Lights
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
-        scene.add(ambientLight);
-
-        const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-        directionalLight.position.set(5, 3, 5);
-        scene.add(directionalLight);
-
-        // Stars
-        const starsGeometry = new THREE.BufferGeometry();
-        const starsMaterial = new THREE.PointsMaterial({
-            color: 0xffffff,
-            size: 0.02,
-            sizeAttenuation: true,
-            transparent: true,
-            opacity: 0.9
-        });
-
-        const starVertices = [];
-        for (let i = 0; i < 1500; i++) {
-            const x = (Math.random() - 0.5) * 25;
-            const y = (Math.random() - 0.5) * 25;
-            const z = (Math.random() - 0.5) * 25;
-            starVertices.push(x, y, z);
-        }
-        starsGeometry.setAttribute('position', new THREE.Float32BufferAttribute(starVertices, 3));
-        stars = new THREE.Points(starsGeometry, starsMaterial);
-        scene.add(stars);
-
-        animateGlobe();
-    }
-
-    function animateGlobe() {
-        animationFrameId = requestAnimationFrame(animateGlobe);
-
-        // Planeta gira mais devagar (rotação realista)
-        if (earth) {
-            earth.rotation.y += 0.0005; // Mais lento
-        }
-        
-        // Nuvens giram mais rápido (como na Terra real)
-        if (clouds) {
-            clouds.rotation.y += 0.002; // 4x mais rápido que o planeta
-        }
-        
-        if (stars) {
-            stars.rotation.y += 0.0003;
-            stars.rotation.x += 0.0001;
-        }
-
-        renderer.render(scene, camera);
-    }
-
-    function onWindowResize() {
-        if (globeContainer && camera && renderer) {
-            camera.aspect = globeContainer.clientWidth / globeContainer.clientHeight;
-            camera.updateProjectionMatrix();
-            renderer.setSize(globeContainer.clientWidth, globeContainer.clientHeight);
-        }
-    }
-
-    // Scroll event para rotação adicional - AGORA COM VELOCIDADES DIFERENTES
-    window.addEventListener('scroll', () => {
-        if (earth) {
-            const scrollY = window.scrollY;
-            earth.rotation.x = scrollY * 0.0003; // Mais lento
-            if (clouds) {
-                clouds.rotation.x = scrollY * 0.0006; // 2x mais rápido que o planeta
-            }
-        }
-    });
-
-    window.addEventListener('resize', onWindowResize);
-    window.addEventListener('load', initGlobe);
-
-    // --- Funções para Modais ---
-    function openEditPaisModal(id, nome, continente, populacao) {
+    function openEditPaisModal(id, nome, continente, populacao, capital, moeda, sigla, idioma) {
         document.getElementById('edit_id_pais').value = id;
         document.getElementById('edit_nome_pais').value = nome;
         document.getElementById('edit_continente').value = continente;
         document.getElementById('edit_populacao_pais').value = populacao;
+        document.getElementById('edit_capital').value = capital || '';
+        document.getElementById('edit_moeda').value = moeda || '';
+        document.getElementById('edit_sigla').value = sigla || '';
+        document.getElementById('edit_idioma').value = idioma || '';
         document.getElementById('modalPais').style.display = 'block';
     }
 
@@ -484,4 +690,59 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
     });
+
+    async function obterClima(idCidade, botao) {
+        const climaDiv = document.getElementById('clima-' + idCidade);
+        const btnTextoOriginal = botao.innerHTML;
+        
+        // Mostrar loading
+        botao.innerHTML = '⏳ Carregando...';
+        botao.disabled = true;
+        climaDiv.innerHTML = '';
+        
+        try {
+            const response = await fetch('?get_clima=' + idCidade);
+            const data = await response.json();
+            
+            if (data.success) {
+                climaDiv.innerHTML = `
+                    <div style="text-align: center;">
+                        <strong>${data.cidade}</strong>
+                        <div style="margin: 8px 0;">
+                            <img src="https://openweathermap.org/img/wn/${data.clima.icone}.png" 
+                                 alt="${data.clima.descricao}" 
+                                 class="weather-icon">
+                            <div style="font-size: 1.2em; font-weight: bold;">
+                                ${data.clima.temperatura}°C
+                            </div>
+                        </div>
+                        <div style="font-style: italic; margin-bottom: 8px;">
+                            ${data.clima.descricao}
+                        </div>
+                        <div class="weather-details">
+                            <div class="weather-item">
+                                <span class="weather-label">💧 Umidade</span>
+                                <span class="weather-value">${data.clima.umidade}%</span>
+                            </div>
+                            <div class="weather-item">
+                                <span class="weather-label">💨 Vento</span>
+                                <span class="weather-value">${data.clima.vento} km/h</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            } else {
+                climaDiv.innerHTML = '<span style="color: #ff6347;">❌ ' + (data.message || 'Erro ao carregar clima') + '</span>';
+            }
+        } catch (error) {
+            climaDiv.innerHTML = '<span style="color: #ff6347;">❌ Erro de conexão</span>';
+            console.error('Erro:', error);
+        } finally {
+            // Restaurar botão
+            botao.innerHTML = btnTextoOriginal;
+            botao.disabled = false;
+        }
+    }
 </script>
+</body>
+</html>
