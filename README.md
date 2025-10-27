@@ -51,3 +51,9 @@ O sistema utiliza **APIs REST** para enriquecer os dados:
 - **PHP** – Back-end e integração com o banco  
 - **MySQL** – Armazenamento de dados  
 - **Git & GitHub** – Controle de versão
+
+---
+
+## Observações
+O código do sistema está disponível no repositório **main**, porém, sem o vídeo que roda de fundo que por ser muito pesado, não é compatível para upload no Github. Por isso, uma versão diferente e pouco intuitiva do sistema pode aparecer ao baixar e executar os arquivos.
+Por causa disso, está anexado o zip do arquivo para a versão correta, completa com o vídeo. Apenas estético, está funcional de ambas maneiras
