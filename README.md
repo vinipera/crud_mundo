@@ -1,10 +1,9 @@
-# 🌍 CRUD Mundo – Sistema de Gerenciamento de Países e Cidades
-
-Bem-vindo ao **CRUD Mundo**, um sistema web completo desenvolvido em **PHP**, **MySQL**, **HTML**, **CSS** e **JavaScript**, projetado para gerenciar dados geográficos do mundo — permitindo cadastrar, listar, editar e excluir **países** e **cidades** com interface amigável e integração com APIs externas.
+# CRUD Mundo – Sistema de Gerenciamento de Países e Cidades
+Feito por **Vinícius Pereira de Morais** - 3°DS
 
 ---
 
-## 📖 Sobre o Projeto
+## Sobre o Projeto
 
 O **CRUD Mundo** foi desenvolvido como parte da disciplina de **Programação Web** do curso de **Desenvolvimento de Sistemas**, com o objetivo de criar uma aplicação web funcional que permita gerenciar dados sobre **países e cidades do mundo**.
 
@@ -12,51 +11,24 @@ A aplicação conta com um **CRUD completo** (Create, Read, Update, Delete), int
 
 ---
 
-## ⚙️ Funcionalidades
+## Funcionalidades
 
-✅ **Gerenciamento de Países**  
+**Gerenciamento de Países**  
 - Cadastrar novos países com informações completas.  
 - Listar todos os países cadastrados.  
 - Editar dados existentes.  
 - Excluir países (com validação de integridade referencial).  
 
-✅ **Gerenciamento de Cidades**  
+**Gerenciamento de Cidades**  
 - Associar cidades a um país existente.  
 - Inserir, listar, editar e excluir cidades.  
 
-✅ **Validações e Feedbacks**  
+**Validações e Feedbacks**  
 - Validação de formulários no front-end com JavaScript.  
 - Alertas e confirmações antes de exclusões.
 
-✅ **Exportação de Dados (Extra)**  
+**Exportação de Dados (Extra)**  
 - Exportação de dados para **CSV compatível com Google Sheets e Excel**.
-
----
-
-## Estrutura do Banco de Dados
-
-Banco de dados: `bd_mundo`  
-
-**Tabelas principais:**
-
-### paises
-| Campo        | Tipo         | Descrição                      |
-|--------------|--------------|------------------------------|
-| id_pais      | INT (PK)     | Identificador do país        |
-| nome         | VARCHAR(100) | Nome oficial                 |
-| continente   | VARCHAR(50)  | Continente                   |
-| populacao    | INT          | População total             |
-| idioma       | VARCHAR(50)  | Idioma principal            |
-
-### cidades
-| Campo        | Tipo         | Descrição                      |
-|--------------|--------------|------------------------------|
-| id_cidade    | INT (PK)     | Identificador da cidade      |
-| nome         | VARCHAR(100) | Nome da cidade              |
-| populacao    | INT          | População da cidade        |
-| id_pais      | INT (FK)     | Relacionamento com `paises` |
-
-🔗 Relação: **1:N** (um país possui várias cidades)
 
 ---
 
@@ -74,12 +46,11 @@ O sistema utiliza **APIs REST** para enriquecer os dados:
 
 ## Tecnologias Utilizadas
 
-- **HTML5** – Estrutura das páginas  
-- **CSS3** – Estilização e responsividade  
-- **JavaScript (ES6+)** – Validações e interações dinâmicas  
-- **PHP 8+** – Back-end e integração com o banco  
+- **HTML** – Estrutura das páginas  
+- **CSS** – Estilização e responsividade  
+- **JavaScript** – Validações e interações dinâmicas  
+- **PHP** – Back-end e integração com o banco  
 - **MySQL** – Armazenamento de dados  
-- **cURL / REST** – Consumo de APIs externas  
 - **Git & GitHub** – Controle de versão
 
 ---
