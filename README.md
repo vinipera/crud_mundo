@@ -17,7 +17,8 @@ A aplicação conta com um **CRUD completo** (Create, Read, Update, Delete), int
 - Cadastrar novos países com informações completas.  
 - Listar todos os países cadastrados.  
 - Editar dados existentes.  
-- Excluir países (com validação de integridade referencial).  
+- Excluir países (com validação de integridade referencial).
+- Pesquisar países existentes vindos da API
 
 **Gerenciamento de Cidades**  
 - Associar cidades a um país existente.  
@@ -27,8 +28,6 @@ A aplicação conta com um **CRUD completo** (Create, Read, Update, Delete), int
 - Validação de formulários no front-end com JavaScript.  
 - Alertas e confirmações antes de exclusões.
 
-**Exportação de Dados (Extra)**  
-- Exportação de dados para **CSV compatível com Google Sheets e Excel**.
 
 ---
 
@@ -52,12 +51,3 @@ O sistema utiliza **APIs REST** para enriquecer os dados:
 - **PHP** – Back-end e integração com o banco  
 - **MySQL** – Armazenamento de dados  
 - **Git & GitHub** – Controle de versão
-
----
-
-
-### 🔧 Passos para rodar localmente
-
-1. Clone este repositório:
-   ```bash
-   git clone https://github.com/seu-usuario/crud-mundo.git
