@@ -1,33 +1,25 @@
 <?php
 
-/**
- * Função para filtrar e sanitizar dados de entrada
- */
 function sanitizeInput($data) {
+    // limpa e protege dados de entrada contra ataques
     if (is_array($data)) {
         return array_map('sanitizeInput', $data);
     }
     return htmlspecialchars(trim($data), ENT_QUOTES, 'UTF-8');
 }
 
-/**
- * Função para validar ID
- */
 function validateId($id) {
+    // valida se id é um número inteiro válido
     return filter_var($id, FILTER_VALIDATE_INT);
 }
 
-/**
- * Função para formatar população
- */
 function formatPopulation($population) {
+    // formata número de população com separadores
     return number_format($population);
 }
 
-/**
- * Função para redirecionar com mensagem
- */
 function redirectWithMessage($message, $type = 'info') {
+    // redireciona página com mensagem temporária
     $_SESSION['flash_message'] = [
         'text' => $message,
         'type' => $type
@@ -36,10 +28,8 @@ function redirectWithMessage($message, $type = 'info') {
     exit;
 }
 
-/**
- * Função para exibir mensagens flash
- */
 function displayFlashMessage() {
+    // exibe mensagem flash e remove da sessão
     if (isset($_SESSION['flash_message'])) {
         $message = $_SESSION['flash_message']['text'];
         $type = $_SESSION['flash_message']['type'];
@@ -51,10 +41,8 @@ function displayFlashMessage() {
     return '';
 }
 
-/**
- * Função para processar dados do formulário de país
- */
 function processPaisFormData($postData) {
+    // processa e formata dados do formulário de país
     return [
         'nome_pais' => trim($postData['nome_pais'] ?? ''),
         'continente' => $postData['continente'] ?? '',
@@ -66,10 +54,8 @@ function processPaisFormData($postData) {
     ];
 }
 
-/**
- * Função para processar dados do formulário de cidade
- */
 function processCidadeFormData($postData) {
+    // processa e formata dados do formulário de cidade
     return [
         'nome_cidade' => trim($postData['nome_cidade'] ?? ''),
         'populacao_cidade' => filter_var($postData['populacao_cidade'], FILTER_VALIDATE_INT),
@@ -77,28 +63,22 @@ function processCidadeFormData($postData) {
     ];
 }
 
-/**
- * Função para validar dados do país
- */
 function validatePaisData($data) {
+    // valida se dados do país estão completos
     return !empty($data['nome_pais']) && 
            !empty($data['continente']) && 
            $data['populacao_pais'] !== false;
 }
 
-/**
- * Função para validar dados da cidade
- */
 function validateCidadeData($data) {
+    // valida se dados da cidade estão completos
     return !empty($data['nome_cidade']) && 
            $data['populacao_cidade'] !== false && 
            $data['id_pais'];
 }
 
-/**
- * Função para obter estatísticas das cidades
- */
 function getCidadeStatistics($cidades) {
+    // calcula estatísticas das cidades (mais populosa)
     $cidadeMaisPopulosa = null;
     $maiorPopulacao = 0;
     
