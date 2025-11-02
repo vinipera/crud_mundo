@@ -60,29 +60,6 @@ function filtrarTabelas() {
     noResultsCidades.style.display = (cidadesEncontradas === 0 && searchTerm !== '') ? 'block' : 'none';
 }
 
-// Funções de Modal
-function openEditPaisModal(id, nome, continente, populacao, capital, moeda, sigla, idioma) {
-    document.getElementById('edit_id_pais').value = id;
-    document.getElementById('edit_nome_pais').value = nome;
-    
-    // Garantir que o continente seja selecionado corretamente
-    const selectContinente = document.getElementById('edit_continente');
-    selectContinente.value = continente;
-    
-    // Se não encontrou correspondência, definir como "Desconhecido"
-    if (!selectContinente.value) {
-        selectContinente.value = 'Desconhecido';
-    }
-    
-    document.getElementById('edit_populacao_pais').value = populacao;
-    document.getElementById('edit_capital').value = capital || '';
-    document.getElementById('edit_moeda').value = moeda || '';
-    document.getElementById('edit_sigla').value = sigla || '';
-    document.getElementById('edit_idioma').value = idioma || '';
-    
-    openModal('modalPais');
-}
-
 function openEditCidadeModal(id, nome, populacao, idPais) {
     document.getElementById('edit_id_cidade').value = id;
     document.getElementById('edit_nome_cidade').value = nome;
@@ -161,6 +138,29 @@ function obterClimaModal(idCidade) {
             console.error('Erro:', error);
             climaBody.innerHTML = `<div class="error-clima">❌ Erro de conexão ao buscar dados climáticos</div>`;
         });
+}
+
+function openEditPaisModal(id, nome, continente, populacao, capital, moeda, sigla, idioma, bandeira = '') {
+    document.getElementById('edit_id_pais').value = id;
+    document.getElementById('edit_nome_pais').value = nome;
+    
+    // Garantir que o continente seja selecionado corretamente
+    const selectContinente = document.getElementById('edit_continente');
+    selectContinente.value = continente;
+    
+    // Se não encontrou correspondência, definir como "Desconhecido"
+    if (!selectContinente.value) {
+        selectContinente.value = 'Desconhecido';
+    }
+    
+    document.getElementById('edit_populacao_pais').value = populacao;
+    document.getElementById('edit_capital').value = capital || '';
+    document.getElementById('edit_moeda').value = moeda || '';
+    document.getElementById('edit_sigla').value = sigla || '';
+    document.getElementById('edit_idioma').value = idioma || '';
+    document.getElementById('edit_bandeira').value = bandeira || ''; // ← CORREÇÃO AQUI
+    
+    openModal('modalPais');
 }
 
 // Inicialização quando o DOM estiver carregado
