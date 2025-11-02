@@ -50,7 +50,8 @@ function processPaisFormData($postData) {
         'capital' => trim($postData['capital'] ?? ''),
         'moeda' => trim($postData['moeda'] ?? ''),
         'sigla' => trim($postData['sigla'] ?? ''),
-        'idioma' => trim($postData['idioma'] ?? '')
+        'idioma' => trim($postData['idioma'] ?? ''),
+        'bandeira' => trim($postData['bandeira'] ?? '')
     ];
 }
 
