@@ -197,7 +197,8 @@ require_once 'processador.php';
                                                 '<?php echo htmlspecialchars($pais['capital'] ?? '', ENT_QUOTES, 'UTF-8'); ?>',
                                                 '<?php echo htmlspecialchars($pais['moeda'] ?? '', ENT_QUOTES, 'UTF-8'); ?>',
                                                 '<?php echo htmlspecialchars($pais['sigla'] ?? '', ENT_QUOTES, 'UTF-8'); ?>',
-                                                '<?php echo htmlspecialchars($pais['idioma'] ?? '', ENT_QUOTES, 'UTF-8'); ?>'
+                                                '<?php echo htmlspecialchars($pais['idioma'] ?? '', ENT_QUOTES, 'UTF-8'); ?>',
+                                                '<?php echo htmlspecialchars($pais['bandeira'] ?? '', ENT_QUOTES, 'UTF-8'); ?>'
                                             )">Editar</span> | 
                                             <a href="?delete_pais=<?php echo $pais['id_pais']; ?>" class="delete-link" onclick="return confirm('Confirmar exclusão?')">Excluir</a>
                                         </td>
@@ -212,7 +213,7 @@ require_once 'processador.php';
                 </div>
                 
                 <div id="secao-cidades">
-                    <h2>Cidades Cadastradas (<?php echo $totalCidades; ?>)</h2>
+                    <h2>Cidades Cadastradas</h2>
                     <div class="table-container">
                         <table id="tabelaCidades">
                             <thead>
