@@ -2,7 +2,7 @@
 define('OPENWEATHER_API_KEY', '06cb432fb3eed4d1136c5929460bd323');
 
 function obterClimaPorCidade($cidadeNome, $paisNome, $apiKey) {
-    // Primeiro tenta buscar pelo nome da cidade + país
+    // Tenta buscar clima por cidade + país
     $url = "https://api.openweathermap.org/data/2.5/weather?q=" . urlencode($cidadeNome) . "," . urlencode($paisNome) . "&appid=" . $apiKey . "&units=metric&lang=pt_br";
     
     $ch = curl_init();
@@ -36,8 +36,10 @@ function obterClimaPorCidade($cidadeNome, $paisNome, $apiKey) {
 }
 
 function processarRequisicaoClima($cidadeController) {
+    // Processa requisição de clima via AJAX
     if (isset($_GET['get_clima'])) {
-        $idCidade = filter_input(INPUT_GET, 'get_clima', FILTER_VALIDATE_INT);
+        // CORREÇÃO: O ID da cidade deve vir de um parâmetro separado
+        $idCidade = isset($_GET['id_cidade']) ? filter_var($_GET['id_cidade'], FILTER_VALIDATE_INT) : null;
         
         if ($idCidade) {
             $cidade = $cidadeController->buscarPorId($idCidade);
@@ -45,7 +47,7 @@ function processarRequisicaoClima($cidadeController) {
             if ($cidade) {
                 $clima = obterClimaPorCidade($cidade['nome_cidade'], $cidade['nome_pais'], OPENWEATHER_API_KEY);
                 
-                if ($clima) {
+                if ($clima && isset($clima['main'])) {
                     header('Content-Type: application/json');
                     echo json_encode([
                         'success' => true,
@@ -55,7 +57,7 @@ function processarRequisicaoClima($cidadeController) {
                             'temperatura' => round($clima['main']['temp']),
                             'descricao' => ucfirst($clima['weather'][0]['description']),
                             'umidade' => $clima['main']['humidity'],
-                            'vento' => round($clima['wind']['speed'] * 3.6),
+                            'vento' => round($clima['wind']['speed'] * 3.6), // Converte m/s para km/h
                             'icone' => $clima['weather'][0]['icon'],
                             'sensacao' => round($clima['main']['feels_like']),
                             'pressao' => $clima['main']['pressure'],
