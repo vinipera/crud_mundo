@@ -1,24 +1,28 @@
 <?php
-class Pais {
+class pais {
     private $pdo;
 
     public function __construct($pdo) {
+        // recebe conexão com banco de dados
         $this->pdo = $pdo;
     }
 
-    public function listarTodos() {
-        $stmt = $this->pdo->query("SELECT * FROM paises ORDER BY nome_pais");
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    public function listartodos() {
+        // busca todos os países ordenados por nome
+        $stmt = $this->pdo->query("select * from paises order by nome_pais");
+        return $stmt->fetchall(PDO::FETCH_ASSOC);
     }
 
-    public function buscarPorId($id) {
-        $stmt = $this->pdo->prepare("SELECT * FROM paises WHERE id_pais = ?");
+    public function buscarporid($id) {
+        // busca país específico pelo id
+        $stmt = $this->pdo->prepare("select * from paises where id_pais = ?");
         $stmt->execute([$id]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
     public function inserir($dados) {
-        $stmt = $this->pdo->prepare("INSERT INTO paises (nome_pais, continente, populacao_pais, capital, moeda, bandeira, sigla, idioma) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+        // insere novo país no banco
+        $stmt = $this->pdo->prepare("insert into paises (nome_pais, continente, populacao_pais, capital, moeda, bandeira, sigla, idioma) values (?, ?, ?, ?, ?, ?, ?, ?)");
         return $stmt->execute([
             $dados['nome_pais'],
             $dados['continente'],
@@ -32,7 +36,8 @@ class Pais {
     }
 
     public function atualizar($id, $dados) {
-        $stmt = $this->pdo->prepare("UPDATE paises SET nome_pais = ?, continente = ?, populacao_pais = ?, capital = ?, moeda = ?, bandeira = ?, sigla = ?, idioma = ? WHERE id_pais = ?");
+        // atualiza dados de um país
+        $stmt = $this->pdo->prepare("update paises set nome_pais = ?, continente = ?, populacao_pais = ?, capital = ?, moeda = ?, bandeira = ?, sigla = ?, idioma = ? where id_pais = ?");
         return $stmt->execute([
             $dados['nome_pais'],
             $dados['continente'],
@@ -47,17 +52,20 @@ class Pais {
     }
 
     public function excluir($id) {
-        $stmt = $this->pdo->prepare("DELETE FROM paises WHERE id_pais = ?");
+        // exclui país do banco
+        $stmt = $this->pdo->prepare("delete from paises where id_pais = ?");
         return $stmt->execute([$id]);
     }
 
-    public function contarTotal() {
-        $stmt = $this->pdo->query("SELECT COUNT(*) as total FROM paises");
+    public function contartotal() {
+        // conta total de países cadastrados
+        $stmt = $this->pdo->query("select count(*) as total from paises");
         return $stmt->fetch(PDO::FETCH_ASSOC)['total'];
     }
 
-    public function buscarPorNome($nome) {
-        $stmt = $this->pdo->prepare("SELECT * FROM paises WHERE nome_pais = ? LIMIT 1");
+    public function buscarpornome($nome) {
+        // busca país pelo nome exato
+        $stmt = $this->pdo->prepare("select * from paises where nome_pais = ? limit 1");
         $stmt->execute([$nome]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
