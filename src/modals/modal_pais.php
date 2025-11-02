@@ -7,7 +7,9 @@
             <input type="hidden" name="action" value="update_pais">
             <input type="hidden" name="id_pais" id="edit_id_pais">
             
-            <label for="edit_nome_pais">Nome:</label>
+            <input type="hidden" id="edit_bandeira" name="bandeira">
+            
+            <label for="edit_nome_pais">Nome:</label>   
             <input type="text" id="edit_nome_pais" name="nome_pais" required>
             
             <label for="edit_continente">Continente:</label>
