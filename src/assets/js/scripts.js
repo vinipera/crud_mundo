@@ -1,3 +1,105 @@
+// assets/js/scripts.js
+
+// Função de pesquisa dinâmica
+function filtrarTabelas() {
+    const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
+    const searchInfo = document.getElementById('searchInfo');
+    
+    // Atualizar informação da pesquisa
+    if (searchTerm === '') {
+        searchInfo.textContent = 'Digite para pesquisar em países e cidades';
+        // Mostrar todas as linhas quando não há pesquisa
+        document.querySelectorAll('.pais-row, .cidade-row').forEach(row => {
+            row.style.display = '';
+        });
+        document.getElementById('noResultsPaises').style.display = 'none';
+        document.getElementById('noResultsCidades').style.display = 'none';
+        return;
+    } else {
+        searchInfo.textContent = `Pesquisando por: "${searchTerm}"`;
+    }
+    
+    // Filtrar países
+    const paisRows = document.querySelectorAll('.pais-row');
+    let paisesEncontrados = 0;
+    
+    paisRows.forEach(row => {
+        const nome = row.getAttribute('data-nome') || '';
+        const continente = row.getAttribute('data-continente') || '';
+        
+        if (nome.includes(searchTerm) || continente.includes(searchTerm)) {
+            row.style.display = '';
+            paisesEncontrados++;
+        } else {
+            row.style.display = 'none';
+        }
+    });
+    
+    // Mostrar/ocultar mensagem de nenhum resultado para países
+    const noResultsPaises = document.getElementById('noResultsPaises');
+    noResultsPaises.style.display = (paisesEncontrados === 0 && searchTerm !== '') ? 'block' : 'none';
+    
+    // Filtrar cidades
+    const cidadeRows = document.querySelectorAll('.cidade-row');
+    let cidadesEncontradas = 0;
+    
+    cidadeRows.forEach(row => {
+        const nome = row.getAttribute('data-nome') || '';
+        const pais = row.getAttribute('data-pais') || '';
+        
+        if (nome.includes(searchTerm) || pais.includes(searchTerm)) {
+            row.style.display = '';
+            cidadesEncontradas++;
+        } else {
+            row.style.display = 'none';
+        }
+    });
+    
+    // Mostrar/ocultar mensagem de nenhum resultado para cidades
+    const noResultsCidades = document.getElementById('noResultsCidades');
+    noResultsCidades.style.display = (cidadesEncontradas === 0 && searchTerm !== '') ? 'block' : 'none';
+}
+
+// Funções de Modal
+function openEditPaisModal(id, nome, continente, populacao, capital, moeda, sigla, idioma) {
+    document.getElementById('edit_id_pais').value = id;
+    document.getElementById('edit_nome_pais').value = nome;
+    
+    // Garantir que o continente seja selecionado corretamente
+    const selectContinente = document.getElementById('edit_continente');
+    selectContinente.value = continente;
+    
+    // Se não encontrou correspondência, definir como "Desconhecido"
+    if (!selectContinente.value) {
+        selectContinente.value = 'Desconhecido';
+    }
+    
+    document.getElementById('edit_populacao_pais').value = populacao;
+    document.getElementById('edit_capital').value = capital || '';
+    document.getElementById('edit_moeda').value = moeda || '';
+    document.getElementById('edit_sigla').value = sigla || '';
+    document.getElementById('edit_idioma').value = idioma || '';
+    
+    openModal('modalPais');
+}
+
+function openEditCidadeModal(id, nome, populacao, idPais) {
+    document.getElementById('edit_id_cidade').value = id;
+    document.getElementById('edit_nome_cidade').value = nome;
+    document.getElementById('edit_populacao_cidade').value = populacao;
+    document.getElementById('edit_id_pais').value = idPais;
+    
+    openModal('modalCidade');
+}
+
+function openModal(modalId) {
+    document.getElementById(modalId).style.display = 'block';
+}
+
+function closeModal(modalId) {
+    document.getElementById(modalId).style.display = 'none';
+}
+
 // Função para obter e exibir clima em modal
 function obterClimaModal(idCidade) {
     const modal = document.getElementById('modalClima');
@@ -60,3 +162,46 @@ function obterClimaModal(idCidade) {
             climaBody.innerHTML = `<div class="error-clima">❌ Erro de conexão ao buscar dados climáticos</div>`;
         });
 }
+
+// Inicialização quando o DOM estiver carregado
+document.addEventListener('DOMContentLoaded', function() {
+    // Botão Voltar ao Topo
+    const btnTopo = document.getElementById('btnTopo');
+    
+    // Mostrar/ocultar botão baseado no scroll
+    window.addEventListener('scroll', function() {
+        if (window.pageYOffset > 300) {
+            btnTopo.style.display = 'flex';
+        } else {
+            btnTopo.style.display = 'none';
+        }
+    });
+    
+    // Função para voltar ao topo suavemente
+    btnTopo.addEventListener('click', function() {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    });
+    
+    // Limpar pesquisa quando o usuário clicar no X do input
+    const searchInput = document.getElementById('searchInput');
+    if (searchInput) {
+        searchInput.addEventListener('search', function() {
+            if (this.value === '') {
+                filtrarTabelas();
+            }
+        });
+    }
+    
+    // Fechar modal ao clicar fora dele
+    window.onclick = function(event) {
+        const modals = document.querySelectorAll('.modal');
+        modals.forEach(modal => {
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+        });
+    }
+});
