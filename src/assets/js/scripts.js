@@ -60,21 +60,82 @@ function filtrarTabelas() {
     noResultsCidades.style.display = (cidadesEncontradas === 0 && searchTerm !== '') ? 'block' : 'none';
 }
 
+// Funções para abrir e fechar modais
+function openModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+        modal.style.display = 'block';
+        document.body.style.overflow = 'hidden'; // Previne scroll da página
+    }
+}
+
+function closeModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+        modal.style.display = 'none';
+        document.body.style.overflow = 'auto'; // Restaura scroll
+    }
+}
+
 function openEditCidadeModal(id, nome, populacao, idPais) {
+    console.log('=== DEBUG openEditCidadeModal ===');
+    console.log('Parâmetros recebidos:', { id, nome, populacao, idPais });
+    
+    // Preencher campos básicos
     document.getElementById('edit_id_cidade').value = id;
     document.getElementById('edit_nome_cidade').value = nome;
     document.getElementById('edit_populacao_cidade').value = populacao;
-    document.getElementById('edit_id_pais').value = idPais;
+    
+    // DEBUG: Verificar elemento select
+    const paisSelect = document.getElementById('edit_id_pais');
+    console.log('Elemento select encontrado:', paisSelect);
+    
+    if (paisSelect) {
+        console.log('Opções disponíveis no select:');
+        for (let i = 0; i < paisSelect.options.length; i++) {
+            console.log(`Opção ${i}: valor="${paisSelect.options[i].value}", texto="${paisSelect.options[i].text}"`);
+        }
+        
+        console.log('Tentando definir valor para:', idPais);
+        paisSelect.value = idPais;
+        console.log('Valor definido. Valor atual do select:', paisSelect.value);
+        
+        // Verificar se o valor foi definido corretamente
+        if (paisSelect.value != idPais) {
+            console.log('❌ ERRO: Valor não foi definido corretamente!');
+            console.log('Tipo de idPais:', typeof idPais);
+            console.log('Tipo do valor do select:', typeof paisSelect.value);
+        } else {
+            console.log('✅ Valor definido com sucesso!');
+        }
+    } else {
+        console.log('❌ ERRO: Elemento edit_id_pais não encontrado!');
+    }
     
     openModal('modalCidade');
 }
 
-function openModal(modalId) {
-    document.getElementById(modalId).style.display = 'block';
-}
-
-function closeModal(modalId) {
-    document.getElementById(modalId).style.display = 'none';
+function openEditPaisModal(id, nome, continente, populacao, capital, moeda, sigla, idioma, bandeira = '') {
+    document.getElementById('edit_id_pais').value = id;
+    document.getElementById('edit_nome_pais').value = nome;
+    
+    // Garantir que o continente seja selecionado corretamente
+    const selectContinente = document.getElementById('edit_continente');
+    selectContinente.value = continente;
+    
+    // Se não encontrou correspondência, definir como "Desconhecido"
+    if (!selectContinente.value) {
+        selectContinente.value = 'Desconhecido';
+    }
+    
+    document.getElementById('edit_populacao_pais').value = populacao;
+    document.getElementById('edit_capital').value = capital || '';
+    document.getElementById('edit_moeda').value = moeda || '';
+    document.getElementById('edit_sigla').value = sigla || '';
+    document.getElementById('edit_idioma').value = idioma || '';
+    document.getElementById('edit_bandeira').value = bandeira || '';
+    
+    openModal('modalPais');
 }
 
 // Função para obter e exibir clima em modal
@@ -140,29 +201,6 @@ function obterClimaModal(idCidade) {
         });
 }
 
-function openEditPaisModal(id, nome, continente, populacao, capital, moeda, sigla, idioma, bandeira = '') {
-    document.getElementById('edit_id_pais').value = id;
-    document.getElementById('edit_nome_pais').value = nome;
-    
-    // Garantir que o continente seja selecionado corretamente
-    const selectContinente = document.getElementById('edit_continente');
-    selectContinente.value = continente;
-    
-    // Se não encontrou correspondência, definir como "Desconhecido"
-    if (!selectContinente.value) {
-        selectContinente.value = 'Desconhecido';
-    }
-    
-    document.getElementById('edit_populacao_pais').value = populacao;
-    document.getElementById('edit_capital').value = capital || '';
-    document.getElementById('edit_moeda').value = moeda || '';
-    document.getElementById('edit_sigla').value = sigla || '';
-    document.getElementById('edit_idioma').value = idioma || '';
-    document.getElementById('edit_bandeira').value = bandeira || ''; // ← CORREÇÃO AQUI
-    
-    openModal('modalPais');
-}
-
 // Inicialização quando o DOM estiver carregado
 document.addEventListener('DOMContentLoaded', function() {
     // Botão Voltar ao Topo
@@ -200,8 +238,122 @@ document.addEventListener('DOMContentLoaded', function() {
         const modals = document.querySelectorAll('.modal');
         modals.forEach(modal => {
             if (event.target == modal) {
-                modal.style.display = 'none';
+                closeModal(modal.id);
             }
         });
     }
+
+    // Fechar modal com ESC key
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+            const modals = document.querySelectorAll('.modal');
+            modals.forEach(modal => {
+                if (modal.style.display === 'block') {
+                    closeModal(modal.id);
+                }
+            });
+        }
+    });
 });
+
+// Variável global para armazenar dados da API
+let dadosAPIEncontrados = null;
+
+// Validar país antes de enviar
+async function validarPais(event) {
+    event.preventDefault();
+    
+    const nomePais = document.getElementById('nome_pais').value.trim();
+    const btnSubmit = document.getElementById('btnSubmitPais');
+    
+    if (!nomePais) {
+        enviarFormularioPais();
+        return false;
+    }
+    
+    // Mostrar loading no botão
+    btnSubmit.innerHTML = '🌍 Buscando na API...';
+    btnSubmit.disabled = true;
+    
+    try {
+        const response = await fetch(`?buscar_pais_api=true&nome_pais=${encodeURIComponent(nomePais)}`);
+        const data = await response.json();
+        
+        if (data.success && data.dados) {
+            dadosAPIEncontrados = data.dados;
+            mostrarModalConfirmacaoAPI(data.dados);
+        } else {
+            // Se não encontrou dados na API, enviar formulário normalmente
+            enviarFormularioPais();
+        }
+    } catch (error) {
+        console.error('Erro na busca API:', error);
+        enviarFormularioPais();
+    } finally {
+        // Restaurar botão
+        btnSubmit.innerHTML = 'Adicionar País';
+        btnSubmit.disabled = false;
+    }
+    
+    return false;
+}
+
+// Mostrar modal com dados da API
+function mostrarModalConfirmacaoAPI(dados) {
+    // Preencher dados no modal
+    if (dados.bandeira) {
+        document.getElementById('confirm_bandeira').src = dados.bandeira;
+        document.getElementById('confirm_bandeira').style.display = 'block';
+    } else {
+        document.getElementById('confirm_bandeira').style.display = 'none';
+    }
+    
+    document.getElementById('confirm_capital').textContent = dados.capital || 'Não informada';
+    document.getElementById('confirm_moeda').textContent = dados.moeda || 'Não informada';
+    document.getElementById('confirm_sigla').textContent = dados.sigla || 'Não informada';
+    document.getElementById('confirm_idioma').textContent = dados.idioma || 'Não informada';
+    
+    // Mostrar modal
+    openModal('modalConfirmacaoAPI');
+}
+
+// Usar dados da API
+function usarDadosAPI() {
+    if (dadosAPIEncontrados) {
+        // Preencher campos do formulário com dados da API
+        if (dadosAPIEncontrados.capital) {
+            document.getElementById('capital').value = dadosAPIEncontrados.capital;
+        }
+        if (dadosAPIEncontrados.moeda) {
+            document.getElementById('moeda').value = dadosAPIEncontrados.moeda;
+        }
+        if (dadosAPIEncontrados.sigla) {
+            document.getElementById('sigla').value = dadosAPIEncontrados.sigla;
+        }
+        if (dadosAPIEncontrados.idioma) {
+            document.getElementById('idioma').value = dadosAPIEncontrados.idioma;
+        }
+        if (dadosAPIEncontrados.bandeira) {
+            document.getElementById('bandeira').value = dadosAPIEncontrados.bandeira;
+        }
+        
+        // Atualizar continente se for diferente de "Desconhecido"
+        if (dadosAPIEncontrados.continente && dadosAPIEncontrados.continente !== 'Desconhecido') {
+            document.getElementById('continente').value = dadosAPIEncontrados.continente;
+        }
+    }
+    
+    closeModal('modalConfirmacaoAPI');
+    enviarFormularioPais();
+}
+
+// Ignorar dados da API
+function ignorarDadosAPI() {
+    closeModal('modalConfirmacaoAPI');
+    enviarFormularioPais();
+}
+
+// Enviar formulário
+function enviarFormularioPais() {
+    document.getElementById('formPais').submit();
+}

@@ -1,45 +1,52 @@
 <?php
-require_once __DIR__ . '/../models/Cidade.php';
+require_once __DIR__ . '/../models/cidade.php';
 
-class CidadeController {
+class cidadecontroller {
     private $cidadeModel;
 
     public function __construct($pdo) {
-        $this->cidadeModel = new Cidade($pdo);
+        // cria instância do model de cidades
+        $this->cidadeModel = new cidade($pdo);
     }
 
     public function listar() {
-        return $this->cidadeModel->listarTodas();
+        // retorna lista de todas as cidades
+        return $this->cidadeModel->listartodas();
     }
 
     public function criar($dados) {
-        // Validações
+        // valida se campos obrigatórios estão preenchidos
         if (empty($dados['nome_cidade']) || empty($dados['populacao_cidade']) || empty($dados['id_pais'])) {
             return false;
         }
 
+        // chama model para inserir nova cidade
         return $this->cidadeModel->inserir($dados);
     }
 
     public function atualizar($id, $dados) {
-        // Validações
+        // valida dados antes de atualizar
         if (empty($dados['nome_cidade']) || empty($dados['populacao_cidade']) || empty($dados['id_pais'])) {
             return false;
         }
 
+        // chama model para atualizar cidade
         return $this->cidadeModel->atualizar($id, $dados);
     }
 
     public function excluir($id) {
+        // chama model para excluir cidade
         return $this->cidadeModel->excluir($id);
     }
 
-    public function contarTotal() {
-        return $this->cidadeModel->contarTotal();
+    public function contartotal() {
+        // retorna quantidade total de cidades
+        return $this->cidadeModel->contartotal();
     }
 
-    public function buscarPorId($id) {
-        return $this->cidadeModel->buscarPorId($id);
+    public function buscarporid($id) {
+        // busca cidade específica pelo id
+        return $this->cidadeModel->buscarporid($id);
     }
 }
 ?>

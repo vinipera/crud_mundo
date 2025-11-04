@@ -1,51 +1,58 @@
 <?php
-require_once __DIR__ . '/../models/Pais.php';
+require_once __DIR__ . '/../models/pais.php';
 require_once __DIR__ . '/../api/api_paises.php';
 
-class PaisController {
+class paiscontroller {
     private $paisModel;
 
     public function __construct($pdo) {
-        $this->paisModel = new Pais($pdo);
+        // cria instância do model de países
+        $this->paisModel = new pais($pdo);
     }
 
     public function listar() {
-        return $this->paisModel->listarTodos();
+        // retorna lista de todos os países
+        return $this->paisModel->listartodos();
     }
 
     public function criar($dados) {
-        // Validações
+        // valida campos obrigatórios do país
         if (empty($dados['nome_pais']) || empty($dados['continente']) || empty($dados['populacao_pais'])) {
             return false;
         }
 
+        // chama model para inserir novo país
         return $this->paisModel->inserir($dados);
     }
 
     public function atualizar($id, $dados) {
-        // Validações
+        // valida dados antes de atualizar país
         if (empty($dados['nome_pais']) || empty($dados['continente']) || empty($dados['populacao_pais'])) {
             return false;
         }
 
+        // chama model para atualizar país
         return $this->paisModel->atualizar($id, $dados);
     }
 
     public function excluir($id) {
+        // chama model para excluir país
         return $this->paisModel->excluir($id);
     }
 
-    public function importarDaAPI() {
-        // Verificar se já existem países
-        if ($this->paisModel->contarTotal() > 0) {
-            return ['success' => false, 'message' => '❌ Importação cancelada: Já existem países cadastrados no sistema.'];
+    public function importardapi() {
+        // verifica se já existem países cadastrados
+        if ($this->paisModel->contartotal() > 0) {
+            return ['success' => false, 'message' => '❌ importação cancelada: já existem países cadastrados no sistema.'];
         }
 
-        return importarPaisesAPI($this->paisModel);
+        // importa países da api externa
+        return importarpaisapi($this->paisModel);
     }
 
-    public function contarTotal() {
-        return $this->paisModel->contarTotal();
+    public function contartotal() {
+        // retorna quantidade total de países
+        return $this->paisModel->contartotal();
     }
 }
 ?>

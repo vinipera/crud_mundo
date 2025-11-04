@@ -7,9 +7,7 @@
             <input type="hidden" name="action" value="update_pais">
             <input type="hidden" name="id_pais" id="edit_id_pais">
             
-            <input type="hidden" id="edit_bandeira" name="bandeira">
-            
-            <label for="edit_nome_pais">Nome:</label>   
+            <label for="edit_nome_pais">Nome:</label>
             <input type="text" id="edit_nome_pais" name="nome_pais" required>
             
             <label for="edit_continente">Continente:</label>
@@ -41,6 +39,9 @@
             
             <label for="edit_idioma">Idioma:</label>
             <input type="text" id="edit_idioma" name="idioma">
+            
+            <label for="edit_bandeira">URL da Bandeira:</label>
+            <input type="text" id="edit_bandeira" name="bandeira">
             
             <button type="submit" class="btn-primary">Atualizar País</button>
         </form>

@@ -679,6 +679,7 @@ tr:hover {
     color: #ffffff;
 }
 
+
 /* ===== BOTÃO VOLTAR AO TOPO ===== */
 .btn-topo {
     position: fixed;
@@ -957,5 +958,203 @@ tr:hover {
     .no-results {
         padding: 30px 15px;
         font-size: 1em;
+    }
+}
+/* Estilos para o modal de confirmação da API */
+.api-confirm-content {
+    max-width: 500px;
+    font-family: 'Roboto Mono', monospace;
+}
+
+.api-data-section {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    margin-bottom: 25px;
+    padding: 20px;
+    background: rgba(40, 25, 15, 0.8);
+    border-radius: 12px;
+    border: 1px solid rgba(222, 133, 0, 0.3);
+    box-shadow: 0 4px 15px rgba(222, 133, 0, 0.1);
+}
+
+.flag-preview-large {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-width: 100px;
+}
+
+.flag-preview-large img {
+    width: 80px;
+    height: 60px;
+    border-radius: 8px;
+    border: 2px solid rgba(222, 133, 0, 0.5);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    object-fit: cover;
+}
+
+.api-data-grid {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+}
+
+.api-data-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(222, 133, 0, 0.2);
+}
+
+.api-data-item:last-child {
+    border-bottom: none;
+}
+
+.api-data-label {
+    font-weight: 600;
+    color: #e6d0b0;
+    font-size: 14px;
+    font-family: 'Roboto Mono', monospace;
+}
+
+.api-data-value {
+    color: #de8500;
+    font-size: 14px;
+    text-align: right;
+    font-weight: 500;
+    font-family: 'Roboto Mono', monospace;
+    text-shadow: 0 0 5px rgba(222, 133, 0, 0.3);
+}
+
+.api-confirm-actions {
+    text-align: center;
+    padding: 20px;
+    background: rgba(222, 133, 0, 0.05);
+    border-radius: 10px;
+    border: 1px solid rgba(222, 133, 0, 0.2);
+}
+
+.api-confirm-question {
+    margin-bottom: 20px;
+    font-size: 16px;
+    color: #e6d0b0;
+    font-weight: 500;
+    font-family: 'Roboto Mono', monospace;
+    text-shadow: 0 0 5px rgba(222, 133, 0, 0.2);
+}
+
+.api-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-items: center;
+}
+
+.btn-confirm {
+    background: linear-gradient(135deg, #48bb78, #38a169);
+    color: white;
+    border: none;
+    padding: 14px 25px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: 'Roboto Mono', monospace;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(72, 187, 120, 0.3);
+    width: 100%;
+    max-width: 300px;
+}
+
+.btn-confirm:hover {
+    background: linear-gradient(135deg, #38a169, #2f855a);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(72, 187, 120, 0.4);
+}
+
+.btn-cancel {
+    background: rgba(255, 255, 255, 0.1);
+    color: #e6d0b0;
+    border: 1px solid rgba(222, 133, 0, 0.3);
+    padding: 14px 25px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: 'Roboto Mono', monospace;
+    transition: all 0.3s ease;
+    width: 100%;
+    max-width: 300px;
+}
+
+.btn-cancel:hover {
+    background: rgba(222, 133, 0, 0.1);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(222, 133, 0, 0.2);
+}
+
+/* Loading state para o botão */
+#btnSubmitPais:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+/* Ajustes de responsividade para o modal */
+@media (max-width: 768px) {
+    .api-data-section {
+        flex-direction: column;
+        text-align: center;
+        gap: 15px;
+    }
+    
+    .flag-preview-large {
+        width: 100%;
+    }
+    
+    .flag-preview-large img {
+        width: 70px;
+        height: 50px;
+    }
+    
+    .api-data-grid {
+        width: 100%;
+    }
+    
+    .api-data-item {
+        flex-direction: column;
+        gap: 5px;
+        text-align: center;
+    }
+    
+    .api-data-value {
+        text-align: center;
+    }
+    
+    .btn-confirm,
+    .btn-cancel {
+        padding: 12px 20px;
+        font-size: 13px;
+    }
+}
+
+@media (max-width: 480px) {
+    .api-confirm-content {
+        max-width: 100%;
+    }
+    
+    .api-data-section {
+        padding: 15px;
+    }
+    
+    .api-confirm-actions {
+        padding: 15px;
+    }
+    
+    .api-confirm-question {
+        font-size: 14px;
     }
 }

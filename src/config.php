@@ -1,1 +1,0 @@
-<!-- DESCARTAR: página sem utilidade -->

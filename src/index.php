@@ -41,63 +41,68 @@ require_once 'processador.php';
                 <!-- Formulários lado a lado -->
                 <div class="forms-side-by-side">
                     <div class="form-column">
-                        <h2>Adicionar Novo País</h2>
-                        <form method="POST" class="form-card">
-                            <input type="hidden" name="action" value="insert_pais">
-                            
-                            <label for="nome_pais">Nome:</label>
-                            <input type="text" id="nome_pais" name="nome_pais" required>
-                            
-                            <label for="continente">Continente:</label>
-                            <select id="continente" name="continente" required>
-                                <option value="América do Norte">América do Norte</option>
-                                <option value="América do Sul">América do Sul</option>
-                                <option value="Europa">Europa</option>
-                                <option value="Ásia">Ásia</option>
-                                <option value="Oceania">Oceania</option>
-                                <option value="Antártica">Antártica</option>
-                                <option value="África">África</option>
-                                <option value="América">América</option>
-                                <option value="América Central">América Central</option>
-                                <option value="Caribe">Caribe</option>
-                                <option value="Desconhecido">Desconhecido</option>
-                            </select>
-                            
-                            <label for="populacao_pais">População:</label>
-                            <input type="number" id="populacao_pais" name="populacao_pais" required>
-                            
-                            <label for="capital">Capital:</label>
-                            <input type="text" id="capital" name="capital">
-                            
-                            <label for="moeda">Moeda:</label>
-                            <input type="text" id="moeda" name="moeda">
-                            
-                            <label for="sigla">Sigla:</label>
-                            <input type="text" id="sigla" name="sigla" maxlength="5">
-                            
-                            <label for="idioma">Idioma:</label>
-                            <input type="text" id="idioma" name="idioma">
-                            
-                            <button type="submit" class="btn-primary">Adicionar País</button>
-                        </form>
+    <h2>Adicionar Novo País</h2>
 
-                        <form method="POST" class="import-form">
-                            <input type="hidden" name="action" value="import_paises_api">
-                            <?php
-                            $disabled = $totalPaises > 0 ? 'disabled' : '';
-                            $title = $totalPaises > 0 ? 'title="Importação já realizada anteriormente"' : '';
-                            ?>
-                            <button type="submit" class="btn-primary btn-import" <?php echo $disabled; ?> <?php echo $title; ?>>
-                                <?php echo $totalPaises > 0 ? '✅ Países Já Importados' : 'Importar países da API'; ?>
-                            </button>
-                        </form>
+    <form method="POST" class="form-card" id="formPais" onsubmit="return validarPais(event)">
+        <input type="hidden" name="action" value="insert_pais">
+        <input type="hidden" name="dados_api" id="dados_api" value="">
+        
+        <label for="nome_pais">Nome do País:</label>
+        <input type="text" id="nome_pais" name="nome_pais" required>
+        
+        <label for="continente">Continente:</label>
+        <select id="continente" name="continente" required>
+            <option value="América do Norte">América do Norte</option>
+            <option value="América do Sul">América do Sul</option>
+            <option value="Europa">Europa</option>
+            <option value="Ásia">Ásia</option>
+            <option value="Oceania">Oceania</option>
+            <option value="Antártica">Antártica</option>
+            <option value="África">África</option>
+            <option value="América">América</option>
+            <option value="América Central">América Central</option>
+            <option value="Caribe">Caribe</option>
+            <option value="Desconhecido">Desconhecido</option>
+        </select>
+        
+        <label for="populacao_pais">População:</label>
+        <input type="number" id="populacao_pais" name="populacao_pais" required>
+        
+        <label for="capital">Capital:</label>
+        <input type="text" id="capital" name="capital">
+        
+        <label for="moeda">Moeda:</label>
+        <input type="text" id="moeda" name="moeda">
+        
+        <label for="sigla">Sigla:</label>
+        <input type="text" id="sigla" name="sigla" maxlength="5">
+        
+        <label for="idioma">Idioma:</label>
+        <input type="text" id="idioma" name="idioma">
+        
+        <label for="bandeira">URL da Bandeira:</label>
+        <input type="text" id="bandeira" name="bandeira">
+        
+        <button type="submit" class="btn-primary" id="btnSubmitPais">Adicionar País</button>
+    </form>
 
-                        <?php if (!empty($import_message)): ?>
-                            <div class="import-message">
-                                <?php echo htmlspecialchars($import_message); ?>
-                            </div>
-                        <?php endif; ?>
-                    </div>
+    <form method="POST" class="import-form">
+        <input type="hidden" name="action" value="import_paises_api">
+        <?php
+        $disabled = $totalPaises > 0 ? 'disabled' : '';
+        $title = $totalPaises > 0 ? 'title="Importação já realizada anteriormente"' : '';
+        ?>
+        <button type="submit" class="btn-primary btn-import" <?php echo $disabled; ?> <?php echo $title; ?>>
+            <?php echo $totalPaises > 0 ? '✅ Países Já Importados' : 'Importar países da API'; ?>
+        </button>
+    </form>
+
+    <?php if (!empty($import_message)): ?>
+        <div class="import-message">
+            <?php echo htmlspecialchars($import_message); ?>
+        </div>
+    <?php endif; ?>
+</div>
 
                     <div class="form-column">
                         <h2>Adicionar Nova Cidade</h2>
@@ -274,6 +279,7 @@ require_once 'processador.php';
     <?php include_once 'modals/modal_pais.php'; ?>
     <?php include_once 'modals/modal_cidade.php'; ?>
     <?php include_once 'modals/modal_clima.php'; ?>
+    <?php include_once 'modals/modal_api_pais.php'; ?>
 
     <script src="assets/js/scripts.js"></script>
 </body>

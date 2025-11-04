@@ -46,6 +46,23 @@ if (isset($_GET['delete_cidade'])) {
     redirectWithMessage('Cidade excluída com sucesso!', 'success');
 }
 
+// Processar busca de dados do país via API
+if (isset($_GET['buscar_pais_api'])) {
+    $nomePais = trim($_GET['nome_pais'] ?? '');
+    
+    if (!empty($nomePais)) {
+        require_once 'api/api_paises.php';
+        $resultado = buscarPaisPorNome($nomePais);
+        
+        header('Content-Type: application/json');
+        echo json_encode($resultado);
+        exit;
+    }
+    
+    echo json_encode(['success' => false, 'message' => 'Nome do país não fornecido']);
+    exit;
+}
+
 // Manipulação de POSTs
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? '';
@@ -98,10 +115,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             break;
 
         case 'import_paises_api':
-            require_once 'api/api_paises.php';
-            $resultado = importarPaisesAPI($paisController);
+            $resultado = $paisController->importardapi();
             $_SESSION['import_message'] = $resultado['message'];
-            break;
+        break;
     }
 
     // Redirecionamento para evitar reenvio do formulário

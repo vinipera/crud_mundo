@@ -1,100 +1,288 @@
 <?php
-function converterContinenteInglesParaPortugues($continenteIngles) {
+function convertercontinenteinglesportugues($continenteingles) {
+    // Converte para minúsculas e remove espaços para comparação case-insensitive
+    $continenteingles = strtolower(trim($continenteingles));
+    
+    // Mapeamento completo de regiões e sub-regiões (inglês -> português)
     $conversao = [
-        'Africa' => 'África',
-        'Americas' => 'América',
-        'Asia' => 'Ásia',
-        'Europe' => 'Europa',
-        'Oceania' => 'Oceania',
-        'Antarctic' => 'Antártica',
-        'North America' => 'América do Norte',
-        'South America' => 'América do Sul',
-        'Central America' => 'América Central',
-        'Caribbean' => 'Caribe'
+        // Regiões principais
+        'africa' => 'África',
+        'americas' => 'América',
+        'asia' => 'Ásia',
+        'europe' => 'Europa',
+        'oceania' => 'Oceania',
+        'antarctic' => 'Antártica',
+        'antarctica' => 'Antártica',
+        
+        // Sub-regiões das Américas
+        'north america' => 'América do Norte',
+        'south america' => 'América do Sul',
+        'central america' => 'América Central',
+        'latin america' => 'América',
+        'caribbean' => 'Caribe',
+        
+        // Sub-regiões da Ásia
+        'middle east' => 'Ásia',
+        'western asia' => 'Ásia',
+        'southern asia' => 'Ásia',
+        'southeast asia' => 'Ásia',
+        'eastern asia' => 'Ásia',
+        'central asia' => 'Ásia',
+        
+        // Sub-regiões da África
+        'northern africa' => 'África',
+        'sub-saharan africa' => 'África',
+        'eastern africa' => 'África',
+        'western africa' => 'África',
+        'middle africa' => 'África',
+        'southern africa' => 'África',
+        
+        // Sub-regiões da Europa
+        'northern europe' => 'Europa',
+        'western europe' => 'Europa',
+        'southern europe' => 'Europa',
+        'eastern europe' => 'Europa',
+        
+        // Sub-regiões da Oceania
+        'australia and new zealand' => 'Oceania',
+        'melanesia' => 'Oceania',
+        'micronesia' => 'Oceania',
+        'polynesia' => 'Oceania',
+        
+        // Outras classificações que podem aparecer
+        'central europe' => 'Europa',
+        'baltic states' => 'Europa',
+        'balkans' => 'Europa',
+        'scandinavia' => 'Europa',
+        'pacific' => 'Oceania',
+        'indian ocean' => 'Ásia',
+        'mediterranean' => 'Europa'
     ];
     
-    return $conversao[$continenteIngles] ?? 'Desconhecido';
+    return $conversao[$continenteingles] ?? 'Desconhecido';
 }
 
-function importarPaisesAPI($paisModel) {
-    $apiUrl = 'https://restcountries.com/v3.1/all?fields=name,region,population,languages,capital,currencies,flags,cca2';
+function importarpaisapi($paismodel) {
+    // Importa países da API RestCountries com mais campos para debug
+    $apiurl = 'https://restcountries.com/v3.1/all?fields=name,region,subregion,population,languages,capital,currencies,flags,cca2';
 
     $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, $apiUrl);
+    curl_setopt($ch, CURLOPT_URL, $apiurl);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_TIMEOUT, 15);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (compatible; CountryImporter/1.0)');
+    
     $resp = curl_exec($ch);
-    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    
+    if (curl_error($ch)) {
+        $error_msg = curl_error($ch);
+        curl_close($ch);
+        return ['success' => false, 'message' => "❌ Erro na conexão: " . $error_msg];
+    }
     curl_close($ch);
 
-    if ($resp && $httpCode >= 200 && $httpCode < 300) {
+    if ($resp && $httpcode >= 200 && $httpcode < 300) {
         $countries = json_decode($resp, true);
+        
         if (is_array($countries)) {
-            $importedCount = 0;
+            $importedcount = 0;
+            $errorcount = 0;
+            $unknown_continents = []; // Para debug
             
             foreach ($countries as $c) {
-                $nome = $c['name']['common'] ?? null;
-                $continente = $c['region'] ?? 'Desconhecido';
-                $continente = converterContinenteInglesParaPortugues($continente);
-                $populacao = isset($c['population']) ? intval($c['population']) : 0;
-                
-                // Novos campos
-                $capital = isset($c['capital'][0]) ? $c['capital'][0] : 'Desconhecida';
-                $moeda = 'Desconhecida';
-                if (!empty($c['currencies']) && is_array($c['currencies'])) {
-                    $moedas = [];
-                    foreach ($c['currencies'] as $currency) {
-                        $moedas[] = $currency['name'] ?? '';
-                    }
-                    $moeda = implode(', ', array_filter($moedas));
-                }
-                $bandeira = $c['flags']['png'] ?? $c['flags']['svg'] ?? null;
-                $sigla = $c['cca2'] ?? '';
-                
-                $idiomas = 'Desconhecido';
-                if (!empty($c['languages']) && is_array($c['languages'])) {
-                    $idiomas = implode(', ', array_values($c['languages']));
-                }
-
-                if (!$nome) continue;
-                
-                // Sanitizar dados
-                $nome = mb_substr(trim($nome), 0, 120);
-                $continente = mb_substr(trim($continente), 0, 120);
-                $idiomas = mb_substr(trim($idiomas), 0, 120);
-                $capital = mb_substr(trim($capital), 0, 100);
-                $moeda = mb_substr(trim($moeda), 0, 50);
-                $sigla = mb_substr(trim($sigla), 0, 5);
-
-                // Verificar se o país já existe antes de inserir
-                $paisExistente = $paisModel->buscarPorNome($nome);
-                
-                if (!$paisExistente) {
-                    $dadosPais = [
-                        'nome_pais' => $nome,
-                        'continente' => $continente,
-                        'populacao_pais' => $populacao,
-                        'capital' => $capital,
-                        'moeda' => $moeda,
-                        'bandeira' => $bandeira,
-                        'sigla' => $sigla,
-                        'idioma' => $idiomas
-                    ];
+                try {
+                    $nome = $c['name']['common'] ?? null;
+                    $region = $c['region'] ?? 'Unknown';
+                    $subregion = $c['subregion'] ?? '';
                     
-                    if ($paisModel->inserir($dadosPais)) {
-                        $importedCount++;
+                    // Debug: registrar continentes desconhecidos
+                    $original_region = $region;
+                    $original_subregion = $subregion;
+                    
+                    // Tenta usar subregion primeiro, depois region
+                    $continente_key = !empty($subregion) ? $subregion : $region;
+                    $continente = convertercontinenteinglesportugues($continente_key);
+                    
+                    // Se ainda for desconhecido, tenta usar apenas a região principal
+                    if ($continente === 'Desconhecido' && !empty($region)) {
+                        $continente = convertercontinenteinglesportugues($region);
                     }
+                    
+                    // Coleta dados para debug de continentes desconhecidos
+                    if ($continente === 'Desconhecido') {
+                        $unknown_continents[] = [
+                            'pais' => $nome,
+                            'region' => $region,
+                            'subregion' => $subregion
+                        ];
+                    }
+                    
+                    $populacao = isset($c['population']) ? intval($c['population']) : 0;
+                    
+                    // Processa dados adicionais do país
+                    $capital = isset($c['capital'][0]) ? $c['capital'][0] : 'Desconhecida';
+                    $moeda = 'Desconhecida';
+                    
+                    if (!empty($c['currencies']) && is_array($c['currencies'])) {
+                        $moedas = [];
+                        foreach ($c['currencies'] as $currencyCode => $currencyData) {
+                            $moedas[] = $currencyData['name'] ?? $currencyCode;
+                        }
+                        $moeda = implode(', ', array_filter($moedas));
+                    }
+                    
+                    $bandeira = $c['flags']['png'] ?? $c['flags']['svg'] ?? null;
+                    $sigla = $c['cca2'] ?? '';
+                    
+                    $idiomas = 'Desconhecido';
+                    if (!empty($c['languages']) && is_array($c['languages'])) {
+                        $idiomas = implode(', ', array_values($c['languages']));
+                    }
+
+                    if (!$nome) {
+                        $errorcount++;
+                        continue;
+                    }
+                    
+                    // Limita tamanho dos campos para o banco
+                    $nome = mb_substr(trim($nome), 0, 120);
+                    $continente = mb_substr(trim($continente), 0, 120);
+                    $idiomas = mb_substr(trim($idiomas), 0, 120);
+                    $capital = mb_substr(trim($capital), 0, 100);
+                    $moeda = mb_substr(trim($moeda), 0, 50);
+                    $sigla = mb_substr(trim($sigla), 0, 5);
+
+                    // Verifica se país já existe no banco
+                    $paisexistente = $paismodel->buscarpornome($nome);
+                    
+                    if (!$paisexistente) {
+                        $dadospais = [
+                            'nome_pais' => $nome,
+                            'continente' => $continente,
+                            'populacao_pais' => $populacao,
+                            'capital' => $capital,
+                            'moeda' => $moeda,
+                            'bandeira' => $bandeira,
+                            'sigla' => $sigla,
+                            'idioma' => $idiomas
+                        ];
+                        
+                        if ($paismodel->inserir($dadospais)) {
+                            $importedcount++;
+                        } else {
+                            $errorcount++;
+                        }
+                    }
+                } catch (Exception $e) {
+                    $errorcount++;
+                    continue;
                 }
+            }
+            
+            $message = "✅ Importação concluída! $importedcount países importados com sucesso.";
+            if ($errorcount > 0) {
+                $message .= " ($errorcount erros)";
+            }
+            
+            // Debug: mostrar continentes não mapeados
+            if (!empty($unknown_continents)) {
+                error_log("Continentes desconhecidos encontrados: " . json_encode($unknown_continents));
             }
             
             return [
                 'success' => true, 
-                'message' => "✅ Importação concluída! $importedCount países foram importados com sucesso.",
-                'count' => $importedCount
+                'message' => $message,
+                'count' => $importedcount,
+                'debug' => $unknown_continents // Remova esta linha em produção
             ];
         }
     }
     
-    return ['success' => false, 'message' => '❌ Erro ao conectar com a API de países. Tente novamente.'];
+    return ['success' => false, 'message' => '❌ Erro ao conectar com a API de países. Código HTTP: ' . $httpcode];
+}
+
+// Função auxiliar para debug - você pode chamar esta função temporariamente para testar países específicos
+function debugContinentePais($nomePais) {
+    $apiurl = "https://restcountries.com/v3.1/name/" . urlencode($nomePais) . "?fields=name,region,subregion";
+    
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $apiurl);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+    $resp = curl_exec($ch);
+    curl_close($ch);
+    
+    if ($resp) {
+        $data = json_decode($resp, true);
+        if (isset($data[0])) {
+            $pais = $data[0];
+            echo "País: " . ($pais['name']['common'] ?? 'N/A') . "<br>";
+            echo "Region: " . ($pais['region'] ?? 'N/A') . "<br>";
+            echo "Subregion: " . ($pais['subregion'] ?? 'N/A') . "<br>";
+            echo "Continente convertido: " . convertercontinenteinglesportugues($pais['subregion'] ?? $pais['region']) . "<br><br>";
+        }
+    }
+}
+
+function buscarPaisPorNome($nomePais) {
+    // Busca dados de um país específico na API
+    $apiurl = 'https://restcountries.com/v3.1/name/' . urlencode($nomePais) . '?fields=name,region,subregion,population,languages,capital,currencies,flags,cca2';
+    
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $apiurl);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    
+    $resp = curl_exec($ch);
+    $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+    
+    if ($resp && $httpcode === 200) {
+        $data = json_decode($resp, true);
+        if (is_array($data) && count($data) > 0) {
+            $pais = $data[0];
+            
+            // Processa os dados do país
+            $nome = $pais['name']['common'] ?? $nomePais;
+            $region = $pais['region'] ?? 'Unknown';
+            $subregion = $pais['subregion'] ?? '';
+            
+            $continente = convertercontinenteinglesportugues($subregion ?: $region);
+            
+            return [
+                'success' => true,
+                'dados' => [
+                    'nome_pais' => $nome,
+                    'continente' => $continente,
+                    'populacao_pais' => $pais['population'] ?? 0,
+                    'capital' => isset($pais['capital'][0]) ? $pais['capital'][0] : '',
+                    'moeda' => obterMoeda($pais['currencies'] ?? []),
+                    'sigla' => $pais['cca2'] ?? '',
+                    'idioma' => obterIdioma($pais['languages'] ?? []),
+                    'bandeira' => $pais['flags']['png'] ?? $pais['flags']['svg'] ?? ''
+                ]
+            ];
+        }
+    }
+    
+    return ['success' => false, 'message' => 'País não encontrado na API'];
+}
+
+function obterMoeda($currencies) {
+    if (empty($currencies) || !is_array($currencies)) return '';
+    
+    $moedas = [];
+    foreach ($currencies as $currencyCode => $currencyData) {
+        $moedas[] = $currencyData['name'] ?? $currencyCode;
+    }
+    return implode(', ', array_filter($moedas));
+}
+
+function obterIdioma($languages) {
+    if (empty($languages) || !is_array($languages)) return '';
+    return implode(', ', array_values($languages));
 }
 ?>
