@@ -2,7 +2,7 @@
 define('OPENWEATHER_API_KEY', '06cb432fb3eed4d1136c5929460bd323');
 
 function obterClimaPorCidade($cidadeNome, $paisNome, $apiKey) {
-    // Tenta buscar clima por cidade + país
+    // Busca do clima por cidade + país
     $url = "https://api.openweathermap.org/data/2.5/weather?q=" . urlencode($cidadeNome) . "," . urlencode($paisNome) . "&appid=" . $apiKey . "&units=metric&lang=pt_br";
     
     $ch = curl_init();
@@ -38,7 +38,7 @@ function obterClimaPorCidade($cidadeNome, $paisNome, $apiKey) {
 function processarRequisicaoClima($cidadeController) {
     // Processa requisição de clima via AJAX
     if (isset($_GET['get_clima'])) {
-        // CORREÇÃO: O ID da cidade deve vir de um parâmetro separado
+        
         $idCidade = isset($_GET['id_cidade']) ? filter_var($_GET['id_cidade'], FILTER_VALIDATE_INT) : null;
         
         if ($idCidade) {

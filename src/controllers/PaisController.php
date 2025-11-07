@@ -43,7 +43,7 @@ class paiscontroller {
     public function importardapi() {
         // verifica se já existem países cadastrados
         if ($this->paisModel->contartotal() > 0) {
-            return ['success' => false, 'message' => '❌ importação cancelada: já existem países cadastrados no sistema.'];
+            return ['success' => false, 'message' => 'importação cancelada: já existem países cadastrados no sistema.'];
         }
 
         // importa países da api externa

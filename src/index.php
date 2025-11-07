@@ -93,7 +93,7 @@ require_once 'processador.php';
         $title = $totalPaises > 0 ? 'title="Importação já realizada anteriormente"' : '';
         ?>
         <button type="submit" class="btn-primary btn-import" <?php echo $disabled; ?> <?php echo $title; ?>>
-            <?php echo $totalPaises > 0 ? '✅ Países Já Importados' : 'Importar países da API'; ?>
+            <?php echo $totalPaises > 0 ? 'Países Já Importados' : 'Importar países da API'; ?>
         </button>
     </form>
 
@@ -270,12 +270,10 @@ require_once 'processador.php';
         <div class="space-visual" aria-hidden="true"></div>
     </div>
 
-    <!-- Botão Voltar ao Topo -->
     <button id="btnTopo" class="btn-topo" title="Voltar ao topo">
         ↑
     </button>
 
-    <!-- Incluir Modais -->
     <?php include_once 'modals/modal_pais.php'; ?>
     <?php include_once 'modals/modal_cidade.php'; ?>
     <?php include_once 'modals/modal_clima.php'; ?>

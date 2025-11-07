@@ -1,4 +1,3 @@
-/* ===== RESET E CONFIGURAÇÕES GERAIS ===== */
 * {
     margin: 0;
     padding: 0;
@@ -14,7 +13,7 @@ body {
     position: relative;
 }
 
-/* ===== FONTES PERSONALIZADAS ===== */
+/* FONTES PERSONALIZADAS  */
 @font-face {
     font-family: 'DROID';
     src: url('../assets/fonts/DROID.ttf') format('truetype');
@@ -22,7 +21,7 @@ body {
     font-style: normal;
 }
 
-/* ===== ELEMENTOS DE FUNDO ===== */
+/* ELEMENTOS DE FUNDO */
 #bgVideo {
     position: fixed;
     top: 0;
@@ -63,7 +62,7 @@ body {
     mix-blend-mode: screen;
 }
 
-/* ===== LAYOUT PRINCIPAL ===== */
+/* LAYOUT PRINCIPAL */
 .main-container {
     display: flex;
     flex-direction: column;
@@ -85,7 +84,7 @@ body {
     text-align: center;
 }
 
-/* ===== SEÇÃO HERO ===== */
+/* SEÇÃO HERO */
 .hero-section {
     min-height: 60vh;
     display: flex;
@@ -122,7 +121,7 @@ body {
     -webkit-text-fill-color: transparent;
 }
 
-/* ===== BOTÕES DE NAVEGAÇÃO ===== */
+/* BOTÕES DE NAVEGAÇÃO */
 .btn-nav {
     display: inline-block;
     margin-bottom: 20px;
@@ -133,7 +132,7 @@ body {
     text-decoration: none;
 }
 
-/* ===== SEÇÃO CRUD ===== */
+/* SEÇÃO CRUD */
 .crud-section {
     padding: 60px 0;
     display: flex;
@@ -157,7 +156,7 @@ h2 {
     width: 100%;
 }
 
-/* ===== FORMULÁRIOS LADO A LADO ===== */
+/* FORMULÁRIOS LADO A LADO */
 .forms-side-by-side {
     display: flex;
     justify-content: center;
@@ -186,7 +185,7 @@ h2 {
     width: 100%;
 }
 
-/* ===== CARDS DE FORMULÁRIO ===== */
+/* CARDS DE FORMULÁRIO */
 .form-card {
     background-color: rgba(40, 25, 15, 0.7);
     backdrop-filter: blur(8px);
@@ -208,7 +207,7 @@ h2 {
     align-items: center;
 }
 
-/* ===== SEÇÃO DE PESQUISA ===== */
+/* SEÇÃO DE PESQUISA */
 .search-section {
     width: 100%;
     max-width: 1200px;
@@ -253,7 +252,7 @@ h2 {
     font-style: italic;
 }
 
-/* ===== DESTAQUE DA PESQUISA ===== */
+/* DESTAQUE DA PESQUISA */
 .search-highlight {
     background: linear-gradient(45deg, #de8500, #cd6700);
     color: #ffffff;
@@ -263,7 +262,7 @@ h2 {
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
-/* ===== MENSAGEM DE NENHUM RESULTADO ===== */
+/* MENSAGEM DE NENHUM RESULTADO */
 .no-results {
     text-align: center;
     padding: 40px 20px;
@@ -279,7 +278,7 @@ h2 {
     margin: 0;
 }
 
-/* ===== ELEMENTOS DE FORMULÁRIO ===== */
+/* ELEMENTOS DE FORMULÁRIO */
 .form-card label {
     display: block;
     margin-top: 18px;
@@ -318,7 +317,7 @@ h2 {
     outline: none;
 }
 
-/* ===== BOTÕES ===== */
+/* BOTÕES */
 .btn-primary {
     font-family: 'Roboto Mono', monospace;
     background: linear-gradient(45deg, #de8500, #cd6700);
@@ -382,7 +381,7 @@ h2 {
     cursor: not-allowed;
 }
 
-/* ===== FORMULÁRIO DE IMPORTAÇÃO ===== */
+/* FORMULÁRIO DE IMPORTAÇÃO */
 .import-form {
     display: inline-block;
     margin-bottom: 20px;
@@ -403,7 +402,7 @@ h2 {
     width: 100%;
 }
 
-/* ===== TABELAS ===== */
+/* TABELAS*/
 .table-container {
     background-color: rgba(40, 25, 15, 0.7);
     backdrop-filter: blur(8px);
@@ -442,7 +441,7 @@ tr:hover {
     background-color: rgba(222, 133, 0, 0.05);
 }
 
-/* ===== LINKS INTERATIVOS ===== */
+/* LINKS INTERATIVOS */
 .edit-link, .delete-link {
     color: #de8500;
     text-decoration: none;
@@ -463,7 +462,7 @@ tr:hover {
     color: #ff4500;
 }
 
-/* ===== BANDEIRAS E DETALHES ===== */
+/* BANDEIRAS E DETALHES */
 .flag-img {
     width: 45px;
     height: 28px;
@@ -506,7 +505,7 @@ tr:hover {
     font-weight: 400;
 }
 
-/* ===== MODAIS ===== */
+/*  MODAIS  */
 .modal {
     display: none;
     position: fixed;
@@ -581,7 +580,7 @@ tr:hover {
     padding: 14px 25px;
 }
 
-/* ===== MODAL DE CLIMA ===== */
+/* MODAL DE CLIMA */
 .clima-modal-content {
     max-width: 500px;
     padding: 25px;
@@ -680,7 +679,7 @@ tr:hover {
 }
 
 
-/* ===== BOTÃO VOLTAR AO TOPO ===== */
+/* BOTÃO VOLTAR AO TOPO */
 .btn-topo {
     position: fixed;
     bottom: 30px;
@@ -713,7 +712,7 @@ tr:hover {
     transform: translateY(-1px);
 }
 
-/* ===== FOOTER ===== */
+/* FOOTER */
 .futuristic-footer {
     text-align: center;
     padding: 40px 0;
@@ -725,7 +724,7 @@ tr:hover {
     width: 100%;
 }
 
-/* ===== RESPONSIVIDADE ===== */
+/* RESPONSIVIDADE */
 @media (max-width: 1200px) {
     .content-section {
         max-width: 1000px;
@@ -831,7 +830,7 @@ tr:hover {
         font-size: 1.8em;
     }
     
-    /* Responsividade para barra de pesquisa */
+    /* barra de pesquisa */
     .search-container {
         max-width: 100%;
         padding: 0 15px;
@@ -842,7 +841,7 @@ tr:hover {
         font-size: 1em;
     }
     
-    /* Responsividade para modal de clima */
+    /* modal de clima */
     .clima-modal-content {
         margin: 10% auto;
         width: 90%;
@@ -950,7 +949,6 @@ tr:hover {
         font-size: 18px;
     }
     
-    /* Ajustes para pesquisa em mobile */
     .search-info {
         font-size: 0.8em;
     }
@@ -960,7 +958,8 @@ tr:hover {
         font-size: 1em;
     }
 }
-/* Estilos para o modal de confirmação da API */
+
+/* Modal de confirmação da API */
 .api-confirm-content {
     max-width: 500px;
     font-family: 'Roboto Mono', monospace;
@@ -1103,7 +1102,7 @@ tr:hover {
     transform: none !important;
 }
 
-/* Ajustes de responsividade para o modal */
+/* Responsividade para o modal */
 @media (max-width: 768px) {
     .api-data-section {
         flex-direction: column;
@@ -1157,4 +1156,111 @@ tr:hover {
     .api-confirm-question {
         font-size: 14px;
     }
+}
+
+/* FORMULÁRIOS DE MODAL */
+.modal-form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.modal-form .form-group {
+    margin-bottom: 20px;
+    width: 100%;
+}
+
+.modal-form .form-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: #e6d0b0;
+    font-weight: 500;
+    font-size: 1em;
+    text-align: left;
+    width: 100%;
+}
+
+.modal-form .form-group input,
+.modal-form .form-group select {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid rgba(222, 133, 0, 0.4);
+    background-color: rgba(60, 45, 30, 0.9);
+    color: #ffffff;
+    border-radius: 6px;
+    font-size: 1em;
+    transition: all 0.3s ease;
+    font-family: 'Roboto Mono', monospace;
+}
+
+.modal-form .form-group input:focus,
+.modal-form .form-group select:focus {
+    border-color: #de8500;
+    box-shadow: 0 0 10px rgba(222, 133, 0, 0.6);
+    outline: none;
+    background-color: rgba(70, 55, 40, 0.9);
+}
+
+.modal-form .form-actions {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    margin-top: 25px;
+    width: 100%;
+}
+
+.modal-form .form-actions .btn-primary {
+    margin: 0;
+    min-width: 160px;
+}
+
+.modal-form .form-actions .btn-cancel {
+    background: rgba(255, 255, 255, 0.1);
+    color: #e6d0b0;
+    border: 1px solid rgba(222, 133, 0, 0.3);
+    padding: 14px 25px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1em;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    min-width: 120px;
+    font-family: 'Roboto Mono', monospace;
+}
+
+.modal-form .form-actions .btn-cancel:hover {
+    background: rgba(222, 133, 0, 0.1);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(222, 133, 0, 0.2);
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .modal-form .form-actions {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .modal-form .form-actions .btn-primary,
+    .modal-form .form-actions .btn-cancel {
+        width: 100%;
+        min-width: auto;
+    }
+}
+
+/*  MODAL DE CIDADE  */
+#modalCidade .modal-content {
+    max-width: 500px;
+}
+
+#modalCidade .form-group input:invalid,
+#modalCidade .form-group select:invalid {
+    border-color: #ff6b6b;
+    box-shadow: 0 0 5px rgba(255, 107, 107, 0.3);
+}
+
+#modalCidade .form-group input:valid,
+#modalCidade .form-group select:valid {
+    border-color: rgba(222, 133, 0, 0.6);
 }

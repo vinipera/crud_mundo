@@ -1,13 +1,10 @@
 <?php
-// process.php
 
-// Incluir configurações e controllers
 require_once 'config/database.php';
 require_once 'config/funcoes.php';
 require_once 'controllers/PaisController.php';
 require_once 'controllers/CidadeController.php';
 
-// Iniciar sessão
 session_start();
 
 // Obter instância do banco
@@ -18,7 +15,7 @@ $pdo = $database->getPdo();
 $paisController = new PaisController($pdo);
 $cidadeController = new CidadeController($pdo);
 
-// Processar requisição de clima (se houver)
+// Processar requisição de clima
 if (isset($_GET['get_clima'])) {
     require_once 'api/api_clima.php';
     processarRequisicaoClima($cidadeController);

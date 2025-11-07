@@ -11,13 +11,10 @@
     die("Falha na conexão: " . $conn->connect_error);
   }
 
-  // Definir o conjunto de caracteres para UTF-8
   $conn->set_charset("utf8");
 
-  // Conexão PDO
   try {
     $pdo = new PDO("mysql:host=$servidor;dbname=$banco;charset=utf8", $usuario, $senha);
-    // Definir o modo de erro do PDO para exceção
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     
   } catch (PDOException $e) {

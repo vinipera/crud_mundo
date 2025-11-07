@@ -63,7 +63,7 @@ function convertercontinenteinglesportugues($continenteingles) {
 }
 
 function importarpaisapi($paismodel) {
-    // Importa países da API RestCountries com mais campos para debug
+    // Importa países da API RestCountries com mais campos
     $apiurl = 'https://restcountries.com/v3.1/all?fields=name,region,subregion,population,languages,capital,currencies,flags,cca2';
 
     $ch = curl_init();
@@ -89,7 +89,7 @@ function importarpaisapi($paismodel) {
         if (is_array($countries)) {
             $importedcount = 0;
             $errorcount = 0;
-            $unknown_continents = []; // Para debug
+            $unknown_continents = []; 
             
             foreach ($countries as $c) {
                 try {
@@ -97,7 +97,7 @@ function importarpaisapi($paismodel) {
                     $region = $c['region'] ?? 'Unknown';
                     $subregion = $c['subregion'] ?? '';
                     
-                    // Debug: registrar continentes desconhecidos
+                    // Registrar continentes desconhecidos
                     $original_region = $region;
                     $original_subregion = $subregion;
                     
@@ -110,7 +110,7 @@ function importarpaisapi($paismodel) {
                         $continente = convertercontinenteinglesportugues($region);
                     }
                     
-                    // Coleta dados para debug de continentes desconhecidos
+                    // Coleta dados para continentes desconhecidos
                     if ($continente === 'Desconhecido') {
                         $unknown_continents[] = [
                             'pais' => $nome,
@@ -181,12 +181,11 @@ function importarpaisapi($paismodel) {
                 }
             }
             
-            $message = "✅ Importação concluída! $importedcount países importados com sucesso.";
+            $message = "Importação concluída! $importedcount países importados com sucesso.";
             if ($errorcount > 0) {
                 $message .= " ($errorcount erros)";
             }
             
-            // Debug: mostrar continentes não mapeados
             if (!empty($unknown_continents)) {
                 error_log("Continentes desconhecidos encontrados: " . json_encode($unknown_continents));
             }
@@ -195,35 +194,12 @@ function importarpaisapi($paismodel) {
                 'success' => true, 
                 'message' => $message,
                 'count' => $importedcount,
-                'debug' => $unknown_continents // Remova esta linha em produção
+                'debug' => $unknown_continents 
             ];
         }
     }
     
-    return ['success' => false, 'message' => '❌ Erro ao conectar com a API de países. Código HTTP: ' . $httpcode];
-}
-
-// Função auxiliar para debug - você pode chamar esta função temporariamente para testar países específicos
-function debugContinentePais($nomePais) {
-    $apiurl = "https://restcountries.com/v3.1/name/" . urlencode($nomePais) . "?fields=name,region,subregion";
-    
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, $apiurl);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_TIMEOUT, 10);
-    $resp = curl_exec($ch);
-    curl_close($ch);
-    
-    if ($resp) {
-        $data = json_decode($resp, true);
-        if (isset($data[0])) {
-            $pais = $data[0];
-            echo "País: " . ($pais['name']['common'] ?? 'N/A') . "<br>";
-            echo "Region: " . ($pais['region'] ?? 'N/A') . "<br>";
-            echo "Subregion: " . ($pais['subregion'] ?? 'N/A') . "<br>";
-            echo "Continente convertido: " . convertercontinenteinglesportugues($pais['subregion'] ?? $pais['region']) . "<br><br>";
-        }
-    }
+    return ['success' => false, 'message' => 'Erro ao conectar com a API de países. Código HTTP: ' . $httpcode];
 }
 
 function buscarPaisPorNome($nomePais) {

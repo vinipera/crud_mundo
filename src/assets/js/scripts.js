@@ -1,5 +1,3 @@
-// assets/js/scripts.js
-
 // Função de pesquisa dinâmica
 function filtrarTabelas() {
     const searchTerm = document.getElementById('searchInput').value.toLowerCase().trim();
@@ -78,40 +76,16 @@ function closeModal(modalId) {
 }
 
 function openEditCidadeModal(id, nome, populacao, idPais) {
-    console.log('=== DEBUG openEditCidadeModal ===');
-    console.log('Parâmetros recebidos:', { id, nome, populacao, idPais });
-    
     // Preencher campos básicos
     document.getElementById('edit_id_cidade').value = id;
     document.getElementById('edit_nome_cidade').value = nome;
     document.getElementById('edit_populacao_cidade').value = populacao;
-    
-    // DEBUG: Verificar elemento select
+
+    // Verificar elemento select
     const paisSelect = document.getElementById('edit_id_pais');
-    console.log('Elemento select encontrado:', paisSelect);
-    
     if (paisSelect) {
-        console.log('Opções disponíveis no select:');
-        for (let i = 0; i < paisSelect.options.length; i++) {
-            console.log(`Opção ${i}: valor="${paisSelect.options[i].value}", texto="${paisSelect.options[i].text}"`);
-        }
-        
-        console.log('Tentando definir valor para:', idPais);
         paisSelect.value = idPais;
-        console.log('Valor definido. Valor atual do select:', paisSelect.value);
-        
-        // Verificar se o valor foi definido corretamente
-        if (paisSelect.value != idPais) {
-            console.log('❌ ERRO: Valor não foi definido corretamente!');
-            console.log('Tipo de idPais:', typeof idPais);
-            console.log('Tipo do valor do select:', typeof paisSelect.value);
-        } else {
-            console.log('✅ Valor definido com sucesso!');
-        }
-    } else {
-        console.log('❌ ERRO: Elemento edit_id_pais não encontrado!');
     }
-    
     openModal('modalCidade');
 }
 
@@ -144,10 +118,9 @@ function obterClimaModal(idCidade) {
     const climaBody = document.getElementById('clima-body');
     
     // Mostrar modal com loading
-    climaBody.innerHTML = '<div class="loading-clima">🌤️ Buscando dados climáticos...</div>';
+    climaBody.innerHTML = '<div class="loading-clima">Buscando dados climáticos...</div>';
     modal.style.display = 'block';
     
-    // CORREÇÃO: Passar ambos os parâmetros corretamente
     fetch(`?get_clima=true&id_cidade=${idCidade}`)
         .then(response => response.json())
         .then(data => {
@@ -192,16 +165,15 @@ function obterClimaModal(idCidade) {
                     </div>
                 `;
             } else {
-                climaBody.innerHTML = `<div class="error-clima">❌ ${data.message || 'Erro ao buscar dados do clima'}</div>`;
+                climaBody.innerHTML = `<div class="error-clima">${data.message || 'Erro ao buscar dados do clima'}</div>`;
             }
         })
         .catch(error => {
             console.error('Erro:', error);
-            climaBody.innerHTML = `<div class="error-clima">❌ Erro de conexão ao buscar dados climáticos</div>`;
+            climaBody.innerHTML = `<div class="error-clima">Erro de conexão ao buscar dados climáticos</div>`;
         });
 }
 
-// Inicialização quando o DOM estiver carregado
 document.addEventListener('DOMContentLoaded', function() {
     // Botão Voltar ao Topo
     const btnTopo = document.getElementById('btnTopo');
@@ -272,7 +244,7 @@ async function validarPais(event) {
     }
     
     // Mostrar loading no botão
-    btnSubmit.innerHTML = '🌍 Buscando na API...';
+    btnSubmit.innerHTML = 'Buscando na API...';
     btnSubmit.disabled = true;
     
     try {
@@ -316,7 +288,6 @@ function mostrarModalConfirmacaoAPI(dados) {
     // Mostrar modal
     openModal('modalConfirmacaoAPI');
 }
-
 // Usar dados da API
 function usarDadosAPI() {
     if (dadosAPIEncontrados) {
