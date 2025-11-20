@@ -14,7 +14,6 @@ require_once 'processador.php';
 </head>
 <body>
 
-    <!-- Vídeo de fundo fixo -->
     <video id="bgVideo" autoplay muted loop playsinline aria-hidden="true">
         <source src="assets/fundo_mundo.mp4" type="video/mp4">
         Seu navegador não suporta vídeo.
@@ -25,7 +24,34 @@ require_once 'processador.php';
             <header class="hero-section">
                 <h1 class="hero-title">Explorando o <span class="gradient-text">Mundo Digital</span></h1>
                 <p class="hero-subtitle">Uma jornada através dos dados geográficos, onde cada país e cidade é um ponto de luz no vasto universo da informação.</p>
-            </header>
+
+                <section class="stats-section">
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <span class="stat-value"><?php echo $totalPaises ?? 0; ?></span>
+                            <span class="stat-label">Total de Países</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-value"><?php echo $totalCidades ?? 0; ?></span>
+                            <span class="stat-label">Total de Cidades</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-value"><?php echo number_format($populacaoMundial ?? 0, 0, ',', '.'); ?></span>
+                            <span class="stat-label">População Mundial</span>
+                        </div>
+                        <div class="stat-card">
+                            <?php 
+                                $nomePaisPop = $paisMaisPopuloso['nome_pais'] ?? 'N/A';
+                                $isLong = strlen($nomePaisPop) > 15;
+                            ?>
+                            <span class="stat-value" <?php echo $isLong ? 'data-long-text="true"' : ''; ?>>
+                                <?php echo htmlspecialchars($nomePaisPop); ?>
+                            </span>
+                            <span class="stat-label">País Mais Populoso</span>
+                        </div>
+                    </div>
+                </section>
+                </header>
             
             <a href="#secao-paises" class="scroll-down" aria-label="Ir para a seção de países">
                 <button type="submit" class="btn-primary btn-nav">Consultar Países</button>
@@ -38,7 +64,6 @@ require_once 'processador.php';
             <br> <br> <br> <br> <br> <br> <br> <br>
             <section class="crud-section">
 
-                <!-- Formulários lado a lado -->
                 <div class="forms-side-by-side">
                     <div class="form-column">
     <h2>Adicionar Novo País</h2>
@@ -133,7 +158,6 @@ require_once 'processador.php';
                 <div id="secao-paises">
                     <h2>Países Cadastrados</h2>
 
-                <!-- Barra de Pesquisa -->
                 <div class="search-section">
                     <div class="search-container">
                         <input type="text" id="searchInput" placeholder="Pesquisar países ou cidades..." 

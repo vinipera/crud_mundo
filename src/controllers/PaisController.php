@@ -54,5 +54,17 @@ class paiscontroller {
         // retorna quantidade total de países
         return $this->paisModel->contartotal();
     }
+
+    public function buscarMaisPopuloso() {
+        return $this->paisModel->buscarMaisPopuloso();
+    }
+
+    public function contarPorContinente() {
+        return $this->paisModel->contarPorContinente();
+    }
+
+    public function somarPopulacaoTotal() {
+        return $this->paisModel->somarPopulacaoTotal();
+    }
 }
 ?>

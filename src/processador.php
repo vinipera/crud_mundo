@@ -122,14 +122,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     exit;
 }
 
-// Obter dados para exibição
+// Obter dados principais para as tabelas
 $paises = $paisController->listar();
 $cidades = $cidadeController->listar();
+
+// Obter dados para o card de estatísticas
 $totalPaises = $paisController->contarTotal();
 $totalCidades = $cidadeController->contarTotal();
 
-// Calcular estatísticas
-$estatisticas = getCidadeStatistics($cidades);
-$cidadeMaisPopulosa = $estatisticas['cidade_mais_populosa'];
-$maiorPopulacao = $estatisticas['maior_populacao'];
+// Chama a função SUM() que criamos no PaisModel
+$populacaoMundial = $paisController->somarPopulacaoTotal(); 
+
+// Chama a função ORDER BY populacao DESC LIMIT 1 que criamos no PaisModel
+$paisMaisPopuloso = $paisController->buscarMaisPopuloso(); 
+
 ?>

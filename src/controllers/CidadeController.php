@@ -48,5 +48,10 @@ class cidadecontroller {
         // busca cidade específica pelo id
         return $this->cidadeModel->buscarporid($id);
     }
+
+    public function contarPorContinente() {
+        // retorna contagem de cidades por continente
+        return $this->cidadeModel->contarPorContinente();
+    }   
 }
 ?>
